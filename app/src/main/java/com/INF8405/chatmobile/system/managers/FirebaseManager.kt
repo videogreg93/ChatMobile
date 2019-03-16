@@ -10,11 +10,6 @@ class FirebaseManager {
     private val usersRef = db.getReference(USERS)
     val mAuth: FirebaseAuth = FirebaseAuth.getInstance()
 
-    suspend fun login() {
-        // TODO implement login
-
-    }
-
     fun addUser(user: Profile) {
         usersRef.child(user.uid).setValue(user)
     }

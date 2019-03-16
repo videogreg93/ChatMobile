@@ -23,6 +23,11 @@ class HomeFragment : Fragment(), HomeContract.View {
         return inflater.inflate(R.layout.fragment_home, container, false)
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        presenter.getMyUser()
+    }
+
     override fun onGetMyUser(user: Profile) {
         title.text = user.displayName
     }

@@ -13,6 +13,8 @@ import kotlinx.coroutines.launch
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.GoogleAuthProvider
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 
 class  LoginPresenter(
@@ -42,8 +44,9 @@ class  LoginPresenter(
         GlobalScope.launch {
             firebaseManager.mAuth.currentUser?.let {user ->
                 profileManager.myId = user.uid
-                myView.doOnAuthentication()
-
+                withContext(Dispatchers.Main) {
+                    myView.doOnAuthentication()
+                }
             }
         }
     }
@@ -62,7 +65,9 @@ class  LoginPresenter(
                             // Add user to UserTable if not there
                             firebaseManager.addUser(Profile(user))
                             profileManager.myId = user.uid
-                            myView.doOnAuthentication()
+                            withContext(Dispatchers.Main) {
+                                myView.doOnAuthentication()
+                            }
                         }
                     } else {
                         // If sign in fails, display a message to the user.

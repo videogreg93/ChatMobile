@@ -1,4 +1,4 @@
-package com.INF8405.chatmobile.utils
+package com.INF8405.chatmobile.view.utils
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -20,6 +20,10 @@ object ViewUtils {
 
     fun displayFragmentWithArgs(activity: FragmentActivity, fragmentToDisplay: Fragment, addToBackStack: Boolean, args: Bundle?) {
         fragmentToDisplay.arguments = args
-        displayFragmentWithoutArgs(activity, fragmentToDisplay, addToBackStack)
+        displayFragmentWithoutArgs(
+            activity,
+            fragmentToDisplay,
+            addToBackStack
+        )
     }
 }

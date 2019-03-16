@@ -1,5 +1,6 @@
 package com.INF8405.chatmobile.view.login
 
+import android.content.Intent
 import com.INF8405.chatmobile.view.base.BasePresenter
 import com.INF8405.chatmobile.view.base.BaseView
 
@@ -15,5 +16,7 @@ interface LoginContract {
 
     interface Presenter : BasePresenter<View> {
         fun authenticate(requestCode: Int)
+        fun getUserSignedIn()
+        fun getUser(data: Intent?)
     }
 }

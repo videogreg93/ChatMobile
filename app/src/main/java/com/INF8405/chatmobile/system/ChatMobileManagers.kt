@@ -1,6 +1,7 @@
 package com.INF8405.chatmobile.system
 
 import com.INF8405.chatmobile.system.managers.FirebaseManager
+import com.INF8405.chatmobile.system.managers.ProfileManager
 
 /**
  * Managers are singletons tasked with a specific job which shall be used
@@ -8,8 +9,10 @@ import com.INF8405.chatmobile.system.managers.FirebaseManager
  */
 object ChatMobileManagers {
     var firebaseManager: FirebaseManager
+    val profileManager: ProfileManager
 
     init {
         firebaseManager = FirebaseManager()
+        profileManager = ProfileManager(firebaseManager)
     }
 }

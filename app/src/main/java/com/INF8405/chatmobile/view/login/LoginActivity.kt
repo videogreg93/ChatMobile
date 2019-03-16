@@ -16,8 +16,20 @@ class LoginActivity : AppCompatActivity(), LoginContract.View {
         setContentView(R.layout.activity_login)
         LoginPresenter(this)
 
+        // Firebase automatically logs us in if we've logged in before
+        presenter.getUserSignedIn()
+
         login_button.setOnClickListener {
-            presenter.authenticate(AUTHENTICATION_CODE)
+            presenter.authenticate(REQUEST_CODE)
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when(requestCode) {
+            REQUEST_CODE -> {
+                presenter.getUser(data)
+            }
         }
     }
 
@@ -32,6 +44,6 @@ class LoginActivity : AppCompatActivity(), LoginContract.View {
     }
 
     companion object {
-        const val AUTHENTICATION_CODE = 301
+        const val REQUEST_CODE = 301
     }
 }

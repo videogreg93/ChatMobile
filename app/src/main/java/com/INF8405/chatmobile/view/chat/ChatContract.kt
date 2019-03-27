@@ -1,19 +1,16 @@
-package com.INF8405.chatmobile.view.home
+package com.INF8405.chatmobile.view.chat
 
 import com.INF8405.chatmobile.models.Profile
 import com.INF8405.chatmobile.view.base.BasePresenter
 import com.INF8405.chatmobile.view.base.BaseView
 
-interface HomeContract {
-
+interface ChatContract {
     interface View : BaseView<Presenter> {
-        fun onGetMyUser(user: Profile)
-        fun onGetMyFriends(friends: List<Profile>)
+        fun onNewMessage(message: String)
     }
 
     interface Presenter : BasePresenter<View> {
-        fun getMyUser()
-        fun getMyFriends()
+        fun connectToRoom(friend: Profile)
+        fun sendMessage(message: String)
     }
-
 }

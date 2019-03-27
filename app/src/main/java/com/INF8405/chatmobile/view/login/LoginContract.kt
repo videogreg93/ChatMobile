@@ -12,10 +12,12 @@ interface LoginContract {
     interface View : BaseView<Presenter> {
         fun doOnAuthentication()
         fun doOnError(t: Throwable?)
+        fun signUp()
     }
 
     interface Presenter : BasePresenter<View> {
         fun authenticate(requestCode: Int)
+        fun logIn(email: String, password: String)
         fun getUserSignedIn()
         fun getUser(data: Intent?)
     }

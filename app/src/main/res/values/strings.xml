@@ -5,6 +5,16 @@
     <string name="title_notifications">Notifications</string>
     <string name="login_title">Login</string>
     <string name="login_button">Login</string>
+    <string name="login_google_button">Login with Google</string>
+    <string name="sign_up_username">Username</string>
+    <string name="sign_up_email">email</string>
+    <string name="sign_up_password">password</string>
+    <string name="sign_up_title">Sign up</string>
+    <string name="sign_up_button">Sign up</string>
+    <string name="new_account_button">Create new account</string>
+    <string name="logout">Log Out</string>
+
+
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.widget.Toast
 import com.INF8405.chatmobile.R
 import com.INF8405.chatmobile.view.main.MainActivity
+import com.INF8405.chatmobile.view.signup.SignupActivity
 import kotlinx.android.synthetic.main.activity_login.*
 
 class LoginActivity : AppCompatActivity(), LoginContract.View {
@@ -19,8 +20,16 @@ class LoginActivity : AppCompatActivity(), LoginContract.View {
         // Firebase automatically logs us in if we've logged in before
         presenter.getUserSignedIn()
 
-        login_button.setOnClickListener {
+        login_button.setOnClickListener{
+            presenter.logIn(login_email.text.toString(), login_password.text.toString())
+        }
+
+        login_google_button.setOnClickListener {
             presenter.authenticate(REQUEST_CODE)
+        }
+
+        new_account_button.setOnClickListener {
+            signUp()
         }
     }
 
@@ -31,6 +40,11 @@ class LoginActivity : AppCompatActivity(), LoginContract.View {
                 presenter.getUser(data)
             }
         }
+    }
+
+    override fun signUp() {
+        val intent = Intent(this@LoginActivity, SignupActivity::class.java)
+        startActivity(intent)
     }
 
     override fun doOnAuthentication() {

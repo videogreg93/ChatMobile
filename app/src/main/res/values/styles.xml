@@ -12,6 +12,15 @@
         <item name="android:textSize">20sp</item>
     </style>
 
+    <style name="Text.Message" parent="">
+        <item name = "android:textSize">14sp</item>
+        <item name = "android:padding">8dp</item>
+    </style>
+
+    <style name="Text.MessageLeft" parent="Text.Message">
+        <item name = "android:background">@drawable/round_textbubble_right</item>
+    </style>
+
 
 
 

@@ -5,6 +5,7 @@
         android:layout_height="wrap_content"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
+        android:padding="10dp"
 >
     <TextView
             android:id="@+id/name"
@@ -13,6 +14,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="John Doe"
+            android:textSize="20sp"
     />
 
 </android.support.constraint.ConstraintLayout>

@@ -67,4 +67,9 @@ class MainActivity : AppCompatActivity(), MainContract.View {
         startActivity(intent)
     }
 
+    override fun onBackPressed() {
+        // TODO leave app when on main screen, else show main screen
+        ViewUtils.displayFragmentWithoutArgs(this,HomeFragment(), false)
+    }
+
 }

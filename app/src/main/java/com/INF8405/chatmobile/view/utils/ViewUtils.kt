@@ -4,6 +4,12 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentActivity
 import com.INF8405.chatmobile.R
+import android.app.Activity
+import android.content.Context
+import android.support.v4.content.ContextCompat.getSystemService
+import android.view.View
+import android.view.inputmethod.InputMethodManager
+
 
 object ViewUtils {
 
@@ -11,7 +17,7 @@ object ViewUtils {
 
         val transaction = activity.supportFragmentManager
             .beginTransaction()
-            .replace(R.id.content, fragmentToDisplay, fragmentToDisplay.javaClass.name)
+            .replace(com.INF8405.chatmobile.R.id.content, fragmentToDisplay, fragmentToDisplay.javaClass.name)
         if (addToBackStack) {
             transaction.addToBackStack(fragmentToDisplay.javaClass.name)
         }
@@ -26,4 +32,12 @@ object ViewUtils {
             addToBackStack
         )
     }
+
+
+}
+
+fun Fragment.hideKeyboardFrom(view: View) {
+    val imm = requireContext().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+    imm.hideSoftInputFromWindow(view.getWindowToken(), 0)
+    view.clearFocus();
 }

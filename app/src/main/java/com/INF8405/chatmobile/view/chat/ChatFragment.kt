@@ -32,6 +32,7 @@ class ChatFragment : Fragment(), ChatContract.View {
         return inflater.inflate(com.INF8405.chatmobile.R.layout.fragment_chat, container, false)
     }
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val profile = arguments?.getSerializable(PROFILE_ARG) as? Profile

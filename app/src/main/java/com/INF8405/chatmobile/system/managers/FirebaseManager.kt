@@ -1,6 +1,7 @@
 package com.INF8405.chatmobile.system.managers
 
 import com.INF8405.chatmobile.models.Profile
+import com.INF8405.chatmobile.system.utils.readList
 import com.INF8405.chatmobile.system.utils.readValue
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
@@ -16,6 +17,10 @@ class FirebaseManager {
 
     suspend fun getUser(id: String): Profile {
         return usersRef.child(id).readValue<Profile>().second
+    }
+
+    suspend fun getAllUsers(): List<Profile> {
+        return usersRef.readList<Profile>()
     }
 
     companion object {

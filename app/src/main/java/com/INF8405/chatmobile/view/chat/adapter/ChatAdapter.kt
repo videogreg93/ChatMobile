@@ -46,6 +46,11 @@ class ChatAdapter(var items: ArrayList<ChatMessage> = ArrayList(), val myId: Str
         submitList(items)
     }
 
+    fun addItems(messages: List<ChatMessage>) {
+        items.addAll(messages)
+        submitList(messages)
+    }
+
     override fun getItem(position: Int): ChatMessage {
         return items.get(position)
     }

@@ -27,7 +27,7 @@ class ChatFragment : Fragment(), ChatContract.View {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-       ChatPresenter(this)
+        ChatPresenter(this)
         // Inflate the layout for this fragment
         return inflater.inflate(com.INF8405.chatmobile.R.layout.fragment_chat, container, false)
     }
@@ -35,6 +35,10 @@ class ChatFragment : Fragment(), ChatContract.View {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        adapter = ChatAdapter(myId = ChatMobileManagers.profileManager.myId)
+        messages.adapter = adapter
+        messages.layoutManager = LinearLayoutManager(activity)
+
         val profile = arguments?.getSerializable(PROFILE_ARG) as? Profile
         profile?.let {
             friend = it
@@ -43,7 +47,8 @@ class ChatFragment : Fragment(), ChatContract.View {
         }
         chat_input.setOnKeyListener { view, keyCode, event ->
             if (event.action == KeyEvent.ACTION_DOWN &&
-                 keyCode == KeyEvent.KEYCODE_ENTER) {
+                keyCode == KeyEvent.KEYCODE_ENTER
+            ) {
                 presenter.sendMessage(chat_input.text?.toString().orEmpty())
                 hideKeyboardFrom(view)
                 chat_input.text?.clear()
@@ -51,16 +56,20 @@ class ChatFragment : Fragment(), ChatContract.View {
             }
             true
         }
-
-        // TODO get old messages
-        adapter = ChatAdapter(myId = ChatMobileManagers.profileManager.myId)
-        messages.adapter = adapter
-        messages.layoutManager = LinearLayoutManager(activity)
     }
 
-    override fun onNewMessage(message: ChatMessage) {
-        // TODO submit items to recyclerview
-        adapter.addItem(message)
+    override fun onGetHistoricMessages(oldMessages: List<ChatMessage>) {
+        adapter.addItems(oldMessages)
+    }
+
+    override fun onNewMessage(message: ChatMessage, isHistoric: Boolean) {
+        if (isHistoric) {
+            val items = adapter.items
+            items.add(0, message)
+            adapter.submitList(items)
+        } else {
+            adapter.addItem(message)
+        }
     }
 
     companion object {

@@ -17,8 +17,10 @@ import com.INF8405.chatmobile.models.ChatMessage
 import com.INF8405.chatmobile.models.Profile
 import com.INF8405.chatmobile.system.ChatMobileManagers
 import com.INF8405.chatmobile.view.chat.adapter.ChatAdapter
+import com.INF8405.chatmobile.view.profile.ProfileFragment
 import com.INF8405.chatmobile.view.utils.ImageUtils
 import com.INF8405.chatmobile.view.utils.ImageUtils.getPortraitBitmap
+import com.INF8405.chatmobile.view.utils.ViewUtils
 import com.INF8405.chatmobile.view.utils.createImageFile
 import kotlinx.android.synthetic.main.fragment_chat.*
 import com.INF8405.chatmobile.view.utils.hideKeyboardFrom
@@ -49,6 +51,11 @@ class ChatFragment : Fragment(), ChatContract.View {
         profile?.let {
             friend = it
             chat_title.text = "Chatting with ${friend.displayName}"
+            chat_title.setOnClickListener {
+                val bundle = Bundle()
+                bundle.putString(ProfileFragment.ID_ARG, friend.uid)
+                ViewUtils.displayFragmentWithArgs(activity!!,ProfileFragment(), true, bundle)
+            }
             presenter.connectToRoom(friend)
         }
         chat_input.setOnKeyListener { view, keyCode, event ->

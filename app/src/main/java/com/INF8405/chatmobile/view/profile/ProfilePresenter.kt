@@ -31,6 +31,21 @@ class  ProfilePresenter(
         myView.presenter = this
     }
 
+    override fun getProfile(profileId: String) {
+        GlobalScope.launch {
+            val profile = firebaseManager.getUser(profileId)
+            withContext(Dispatchers.Main) {
+                // clean up profile object
+                if (profile.email.isBlank())
+                    profile.email = "No email has been set"
+                if (profile.location.isBlank())
+                    profile.location = "No location has been set"
+                myView.onGetProfile(profile)
+            }
+        }
+    }
 
-
+    override fun saveProfile(profile: Profile) {
+        firebaseManager.addUser(profile)
+    }
 }

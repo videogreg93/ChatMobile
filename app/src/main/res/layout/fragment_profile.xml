@@ -6,6 +6,15 @@
                                              android:layout_height="match_parent"
                                              tools:context=".view.profile.ProfileFragment">
 
+    <ImageButton
+            android:id="@+id/edit_button"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_edit_black_24dp"
+            android:visibility="gone"/>
+
 
     <ImageView
             android:id="@+id/profile_image"
@@ -28,7 +37,7 @@
             app:layout_constraintTop_toBottomOf="@id/profile_image"
             android:layout_margin="10dp"/>
 
-    <TextView
+    <EditText
             android:id="@+id/display_name"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -37,9 +46,12 @@
             app:layout_constraintEnd_toEndOf="parent"
             android:textAppearance="@style/Text.Profile"
             android:layout_margin="10dp"
-            tools:text="Gregory Fournier"/>
+            tools:text="Gregory Fournier"
+            android:background="@android:color/transparent"
+            android:textColor="#000000"
+            android:enabled="false"/>
 
-    <TextView
+    <EditText
             android:id="@+id/email"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -48,9 +60,12 @@
             app:layout_constraintEnd_toEndOf="parent"
             android:textAppearance="@style/Text.Profile"
             android:layout_margin="10dp"
-            tools:text="Gregorykarlfournier@gmail.com"/>
+            tools:text="Gregorykarlfournier@gmail.com"
+            android:background="@android:color/transparent"
+            android:textColor="#000000"
+            android:enabled="false"/>
 
-    <TextView
+    <EditText
             android:id="@+id/location"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -59,7 +74,23 @@
             app:layout_constraintEnd_toEndOf="parent"
             android:textAppearance="@style/Text.Profile"
             android:layout_margin="10dp"
-            tools:text="Montréal"/>
+            tools:text="Montréal"
+            android:background="@android:color/transparent"
+            android:textColor="#000000"
+            android:enabled="false"/>
+
+    <Button
+            android:id="@+id/share_profile_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/profile_share"
+            app:layout_constraintTop_toBottomOf="@id/location"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginStart="120dp"
+            android:layout_marginEnd="120dp"
+    />
 
 
 </android.support.constraint.ConstraintLayout>

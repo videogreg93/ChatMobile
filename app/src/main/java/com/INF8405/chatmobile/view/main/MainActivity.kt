@@ -7,8 +7,10 @@ import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import com.INF8405.chatmobile.R
+import com.INF8405.chatmobile.system.ChatMobileManagers
 import com.INF8405.chatmobile.view.home.HomeFragment
 import com.INF8405.chatmobile.view.login.LoginActivity
+import com.INF8405.chatmobile.view.profile.ProfileFragment
 import com.INF8405.chatmobile.view.utils.ViewUtils
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -26,7 +28,11 @@ class MainActivity : AppCompatActivity(), MainContract.View {
             R.id.navigation_dashboard -> {
                 return@OnNavigationItemSelectedListener true
             }
-            R.id.navigation_notifications -> {
+            R.id.navigation_profile -> {
+                val myId = ChatMobileManagers.profileManager.myId
+                val bundle = Bundle()
+                bundle.putString(ProfileFragment.ID_ARG, myId)
+                ViewUtils.displayFragmentWithArgs(this, ProfileFragment(), false, bundle)
                 return@OnNavigationItemSelectedListener true
             }
         }
@@ -69,7 +75,8 @@ class MainActivity : AppCompatActivity(), MainContract.View {
 
     override fun onBackPressed() {
         // TODO leave app when on main screen, else show main screen
-        ViewUtils.displayFragmentWithoutArgs(this,HomeFragment(), false)
+        if (!supportFragmentManager.popBackStackImmediate())
+            ViewUtils.displayFragmentWithoutArgs(this,HomeFragment(), false)
     }
 
 }

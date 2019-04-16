@@ -25,17 +25,40 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/chat_title"
-            app:layout_constraintBottom_toTopOf="@id/chat_input"
+            app:layout_constraintBottom_toTopOf="@id/preview_photo"
+    />
+
+    <ImageView
+            android:id="@+id/preview_photo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/messages"
+            app:layout_constraintStart_toStartOf="@id/photo_button"
+            app:layout_constraintEnd_toEndOf="@id/photo_button"
+            app:layout_constraintBottom_toTopOf="@id/photo_button"
+            tools:src="@mipmap/ic_launcher"
+
+    />
+
+    <android.support.design.widget.FloatingActionButton
+            android:id="@+id/photo_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/chat_input"
+            android:layout_margin="10dp"
+            android:src="@drawable/ic_add_a_photo_white_24dp"
     />
 
     <android.support.design.widget.TextInputEditText
             android:id="@+id/chat_input"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@id/photo_button"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/messages"
+            app:layout_constraintTop_toTopOf="@id/photo_button"
             android:layout_marginBottom="15dp"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"

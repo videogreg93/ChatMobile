@@ -1,10 +1,14 @@
 package com.INF8405.chatmobile.view.chat
 
 
+import android.app.Activity.RESULT_OK
+import android.content.Intent
+import android.graphics.Bitmap
 import android.os.Bundle
+import android.provider.MediaStore
 import android.support.v4.app.Fragment
+import android.support.v4.content.FileProvider
 import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -13,8 +17,12 @@ import com.INF8405.chatmobile.models.ChatMessage
 import com.INF8405.chatmobile.models.Profile
 import com.INF8405.chatmobile.system.ChatMobileManagers
 import com.INF8405.chatmobile.view.chat.adapter.ChatAdapter
-import kotlinx.android.synthetic.main.fragment_chat.*
+import com.INF8405.chatmobile.view.profile.ProfileFragment
+import com.INF8405.chatmobile.view.utils.ImageUtils
+import com.INF8405.chatmobile.view.utils.ImageUtils.getPortraitBitmap
 import com.INF8405.chatmobile.view.utils.ViewUtils
+import com.INF8405.chatmobile.view.utils.createImageFile
+import kotlinx.android.synthetic.main.fragment_chat.*
 import com.INF8405.chatmobile.view.utils.hideKeyboardFrom
 
 
@@ -43,6 +51,11 @@ class ChatFragment : Fragment(), ChatContract.View {
         profile?.let {
             friend = it
             chat_title.text = "Chatting with ${friend.displayName}"
+            chat_title.setOnClickListener {
+                val bundle = Bundle()
+                bundle.putString(ProfileFragment.ID_ARG, friend.uid)
+                ViewUtils.displayFragmentWithArgs(activity!!,ProfileFragment(), true, bundle)
+            }
             presenter.connectToRoom(friend)
         }
         chat_input.setOnKeyListener { view, keyCode, event ->
@@ -55,6 +68,11 @@ class ChatFragment : Fragment(), ChatContract.View {
                 messages.invalidate()
             }
             true
+        }
+
+        // Setup picture button
+        photo_button.setOnClickListener {
+            takePicture()
         }
     }
 
@@ -72,8 +90,32 @@ class ChatFragment : Fragment(), ChatContract.View {
         }
     }
 
+    // Picture methods
+    private fun takePicture() {
+        Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
+            val photoFile = activity?.createImageFile()
+            photoFile?.also {
+                // TODO see why this breaks
+//                val photoURI = FileProvider.getUriForFile(requireContext(),"com.INF8405.chatmobile",it)
+//                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
+            }
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            val originalBitmap = data?.extras?.get("data") as Bitmap
+            preview_photo.setImageBitmap(getPortraitBitmap(originalBitmap))
+        }
+    }
+
+
     companion object {
         const val PROFILE_ARG = "profile"
+        const val REQUEST_IMAGE_CAPTURE = 2
+
     }
 
 }

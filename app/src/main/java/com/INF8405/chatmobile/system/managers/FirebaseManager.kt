@@ -15,8 +15,16 @@ class FirebaseManager {
     private val messagesRef = db.getReference(MESSAGES)
     val mAuth: FirebaseAuth = FirebaseAuth.getInstance()
 
-    fun addUser(user: Profile) {
-        usersRef.child(user.uid).setValue(user)
+    suspend fun addUser(user: Profile) {
+        try {
+            usersRef.child(user.uid).readValue<Profile>()
+        } catch (e: Exception) {
+            usersRef.child(user.uid).setValue(user)
+        }
+    }
+
+    fun updateUser(profile: Profile) {
+        usersRef.child(profile.uid).setValue(profile)
     }
 
     suspend fun getUser(id: String): Profile {
@@ -34,6 +42,7 @@ class FirebaseManager {
     suspend fun getMessages(roomId: String): List<ChatMessage> {
         return messagesRef.child(roomId).orderByKey().readList<ChatMessage>().map { it.second }
     }
+
 
     companion object {
         const val USERS = "Users"

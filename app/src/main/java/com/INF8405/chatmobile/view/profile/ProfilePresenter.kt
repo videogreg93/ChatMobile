@@ -46,6 +46,8 @@ class  ProfilePresenter(
     }
 
     override fun saveProfile(profile: Profile) {
-        firebaseManager.addUser(profile)
+        GlobalScope.launch {
+            firebaseManager.updateUser(profile)
+        }
     }
 }

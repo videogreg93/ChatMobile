@@ -1,6 +1,8 @@
 package com.INF8405.chatmobile.view.profile
 
 
+import android.app.usage.NetworkStats
+import android.app.usage.NetworkStatsManager
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.support.v4.app.Fragment

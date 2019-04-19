@@ -25,9 +25,6 @@ class MainActivity : AppCompatActivity(), MainContract.View {
                 ViewUtils.displayFragmentWithoutArgs(this, HomeFragment(), false)
                 return@OnNavigationItemSelectedListener true
             }
-            R.id.navigation_dashboard -> {
-                return@OnNavigationItemSelectedListener true
-            }
             R.id.navigation_profile -> {
                 val myId = ChatMobileManagers.profileManager.myId
                 val bundle = Bundle()

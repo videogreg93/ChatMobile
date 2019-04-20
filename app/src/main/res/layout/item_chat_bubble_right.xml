@@ -5,20 +5,34 @@
                                              android:orientation="horizontal"
                                              android:layout_width="match_parent"
                                              android:layout_height="wrap_content">
-    <TextView
-            android:id="@+id/chat_text_right"
-            android:layout_width="0dp"
+
+    <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:text="This is a message"
-            android:textAppearance="@style/Text.Message"
-            android:padding="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp"
-            android:textColor="#FFFFFF"
             android:background="@drawable/round_textbubble_right"
-    />
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp">
+        <TextView
+                android:id="@+id/chat_text_right"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="This is a message"
+                android:padding="8dp"
+
+                android:textColor="#FFFFFF"
+                android:background="@drawable/round_textbubble_right"
+        />
+        <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:maxWidth="42dp"
+                android:maxHeight="42dp"
+                android:scaleType="fitCenter"/>
+    </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

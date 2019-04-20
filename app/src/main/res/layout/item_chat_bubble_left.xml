@@ -12,7 +12,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             android:text="This is a message"
-            android:textAppearance="@style/Text.Message"
             android:padding="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"

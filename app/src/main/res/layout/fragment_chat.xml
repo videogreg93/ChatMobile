@@ -9,7 +9,7 @@
 
     <TextView
             android:id="@+id/chat_title"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -21,48 +21,81 @@
     <android.support.v7.widget.RecyclerView
             android:id="@+id/messages"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/chat_title"
-            app:layout_constraintBottom_toTopOf="@id/preview_photo"
     />
 
-    <ImageView
-            android:id="@+id/preview_photo"
+    <RelativeLayout
+            android:id="@+id/preview_panel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/messages"
-            app:layout_constraintStart_toStartOf="@id/photo_button"
-            app:layout_constraintEnd_toEndOf="@id/photo_button"
-            app:layout_constraintBottom_toTopOf="@id/photo_button"
-            tools:src="@mipmap/ic_launcher"
-
-    />
-
-    <android.support.design.widget.FloatingActionButton
-            android:id="@+id/photo_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/chat_input"
-            android:layout_margin="10dp"
-            android:src="@drawable/ic_add_a_photo_white_24dp"
-    />
-
-    <android.support.design.widget.TextInputEditText
-            android:id="@+id/chat_input"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@id/photo_button"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/photo_button"
-            android:layout_marginBottom="15dp"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
-            android:inputType="text"
-    />
+            app:layout_constraintBottom_toTopOf="@id/inputs">
+
+
+        <android.support.design.widget.FloatingActionButton
+                android:id="@+id/close_preview"
+                android:src="@android:drawable/ic_menu_close_clear_cancel"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                app:layout_constraintStart_toEndOf="parent"
+                app:fabCustomSize="20dp"
+                android:clickable="true"
+                app:backgroundTint="@color/colorPrimary"/>
+        <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/preview_photo"
+                tools:src="@mipmap/ic_launcher"
+                android:padding="10dp"
+        />
+    </RelativeLayout>
+    <TableLayout
+            android:id="@+id/inputs"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:shrinkColumns="0"
+            android:stretchColumns="1"
+            android:gravity="center">
+
+        <TableRow
+                android:layout_width="fill_parent"
+                android:layout_weight="1">
+        </TableRow>
+        <TableRow
+                android:layout_width="fill_parent"
+                android:layout_weight="1">
+            <android.support.design.widget.FloatingActionButton
+                    android:id="@+id/photo_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_column="0"
+                    android:layout_margin="10dp"
+                    android:src="@drawable/ic_add_a_photo_white_24dp"
+            />
+            <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_column="1"
+                    android:layout_margin="10dp">
+
+                <android.support.design.widget.TextInputEditText
+                        android:id="@+id/chat_input"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="text"
+                        android:imeOptions="actionSend"/>
+            </android.support.design.widget.TextInputLayout>
+
+
+        </TableRow>
+    </TableLayout>
+
+
 
 </android.support.constraint.ConstraintLayout>

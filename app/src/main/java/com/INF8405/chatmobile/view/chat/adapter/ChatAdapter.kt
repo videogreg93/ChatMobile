@@ -1,5 +1,6 @@
 package com.INF8405.chatmobile.view.chat.adapter
 
+import android.content.Context
 import android.support.v7.recyclerview.extensions.ListAdapter
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -7,10 +8,13 @@ import android.view.View
 import android.view.ViewGroup
 import com.INF8405.chatmobile.R
 import com.INF8405.chatmobile.models.ChatMessage
+import com.INF8405.chatmobile.system.managers.FirebaseManager
+import com.INF8405.chatmobile.view.chat.ChatFragment
+import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.item_chat_bubble_left.view.*
 import kotlinx.android.synthetic.main.item_chat_bubble_right.view.*
 
-class ChatAdapter(var items: ArrayList<ChatMessage> = ArrayList(), val myId: String) :
+class ChatAdapter(var items: ArrayList<ChatMessage> = ArrayList(), val myId: String, val context: Context) :
     ListAdapter<ChatMessage, ChatAdapter.ViewHolder>(DiffUtil()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -20,7 +24,7 @@ class ChatAdapter(var items: ArrayList<ChatMessage> = ArrayList(), val myId: Str
             MESSAGE_TYPE.LEFT -> LayoutInflater.from(parent.context)
                 .inflate(R.layout.item_chat_bubble_left, parent, false)
         }
-        return ViewHolder(view, viewType)
+        return ViewHolder(view, viewType, context)
 
     }
 
@@ -65,13 +69,25 @@ class ChatAdapter(var items: ArrayList<ChatMessage> = ArrayList(), val myId: Str
     }
 
 
-    class ViewHolder(val view: View, val viewType: Int) : RecyclerView.ViewHolder(view) {
+    class ViewHolder(val view: View, val viewType: Int, val context: Context) : RecyclerView.ViewHolder(view) {
         fun bindLeft(message: ChatMessage) {
             view.chat_text_left.text = message.text
         }
 
         fun bindRight(message: ChatMessage) {
             view.chat_text_right.text = message.text
+            if(message.picture != null && message.picture?.pictureId != null)
+            {
+                val pictureName = message.picture!!.pictureId
+                val fileRef = FirebaseManager.getFileReference(pictureName)
+
+                val imageView = view.imageView
+
+
+                Glide.with(context)
+                    .load(fileRef)
+                    .into(imageView)
+            }
         }
     }
 }

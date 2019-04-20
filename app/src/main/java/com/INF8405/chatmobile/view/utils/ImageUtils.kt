@@ -1,14 +1,12 @@
 package com.INF8405.chatmobile.view.utils
 
 import android.graphics.Bitmap
-import android.graphics.Bitmap.CompressFormat
 import android.graphics.Matrix
 import android.support.media.ExifInterface
 import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
-import android.R.array
 import android.app.Activity
 import android.os.Environment
+import android.provider.Settings
 import java.io.File
 import java.io.IOException
 import java.nio.ByteBuffer
@@ -16,7 +14,12 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
+
+
 object ImageUtils {
+
+    var currentPhotoPath: String = ""
+
 
     fun getPortraitBitmap(bitmap: Bitmap): Bitmap {
 
@@ -68,13 +71,10 @@ object ImageUtils {
 fun Activity.createImageFile(): File {
     // Create an image file name
     val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
-    val storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-    return File.createTempFile(
-        "JPEG_${timeStamp}_", /* prefix */
-        ".jpg", /* suffix */
-        storageDir /* directory */
-    ).apply {
-        // Save a file: path for use with ACTION_VIEW intents
-        //currentPhotoPath = absolutePath
-    }
+    val androidId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID)
+    val pictureFile: String = "CHATMOBILE" + androidId + timeStamp;
+    val storageDir: File = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+    val image: File = File.createTempFile(pictureFile, ".jpg", storageDir)
+    ImageUtils.currentPhotoPath= image.absolutePath
+    return image
 }

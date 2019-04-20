@@ -9,10 +9,12 @@ interface ChatContract {
     interface View : BaseView<Presenter> {
         fun onNewMessage(message: ChatMessage, isHistoric: Boolean = false)
         abstract fun onGetHistoricMessages(oldMessages: List<ChatMessage>)
+        fun clearPreviewImage()
     }
 
     interface Presenter : BasePresenter<View> {
         fun connectToRoom(friend: Profile)
         fun sendMessage(message: String)
+        fun setSendingPicture(isSending: Boolean)
     }
 }

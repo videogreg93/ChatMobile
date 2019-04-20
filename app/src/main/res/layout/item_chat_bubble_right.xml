@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                                             xmlns:tools="http://schemas.android.com/tools"
                                              xmlns:app="http://schemas.android.com/apk/res-auto"
                                              android:orientation="horizontal"
                                              android:layout_width="match_parent"
                                              android:layout_height="wrap_content">
 
     <LinearLayout
+            android:id="@+id/chat_bubble_right"
             android:orientation="vertical"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -26,12 +26,12 @@
                 android:background="@drawable/round_textbubble_right"
         />
         <ImageView
-                android:id="@+id/imageView"
+                android:id="@+id/imageView_right"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_margin="8dp"
                 android:adjustViewBounds="true"
-                android:maxWidth="42dp"
-                android:maxHeight="42dp"
+                android:maxHeight="300dp"
                 android:scaleType="fitCenter"/>
     </LinearLayout>
 

@@ -20,7 +20,6 @@ class FirebaseManager {
     private val storage = FirebaseStorage.getInstance()
     private val storageRef = storage.reference
 
-
     suspend fun addUser(user: Profile) {
         try {
             usersRef.child(user.uid).readValue<Profile>()
@@ -51,7 +50,7 @@ class FirebaseManager {
 
     fun savePicture(pictureUri: Uri): UploadTask
     {
-        val cloudFileId: String = pictureUri.lastPathSegment
+        val cloudFileId: String = pictureUri.lastPathSegment!!
         val uploadRef = storageRef.child(cloudFileId)
         return uploadRef.putFile(pictureUri)
     }

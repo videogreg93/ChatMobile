@@ -56,5 +56,6 @@ dependencies {
 
     // FirebaseUI Storage only
     implementation 'com.firebaseui:firebase-ui-storage:4.3.1'
+    implementation 'com.android.support:recyclerview-v7:28.0.0'
 
 }

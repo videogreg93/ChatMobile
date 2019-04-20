@@ -75,6 +75,6 @@ fun Activity.createImageFile(): File {
     val pictureFile: String = "CHATMOBILE" + androidId + timeStamp;
     val storageDir: File = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
     val image: File = File.createTempFile(pictureFile, ".jpg", storageDir)
-    ImageUtils.currentPhotoPath= image.absolutePath
+    ImageUtils.currentPhotoPath = image.absolutePath
     return image
 }

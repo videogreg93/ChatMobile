@@ -12,6 +12,8 @@ import com.INF8405.chatmobile.view.home.HomeFragment
 import com.INF8405.chatmobile.view.login.LoginActivity
 import com.INF8405.chatmobile.view.profile.ProfileFragment
 import com.INF8405.chatmobile.view.utils.ViewUtils
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.storage.FirebaseStorage
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity(), MainContract.View {

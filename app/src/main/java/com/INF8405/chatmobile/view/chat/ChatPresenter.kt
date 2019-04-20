@@ -89,22 +89,18 @@ class ChatPresenter(
             if (imageFile.exists()) {
                 // Send the picture to firebase
                 GlobalScope.async {
-                    firebaseManager.savePicture(Uri.fromFile(imageFile))
+                    val pictureUri = Uri.fromFile(imageFile);
+                    firebaseManager.savePicture(pictureUri)
                         .addOnFailureListener {
                             // Handle unsuccessful download
                             Log.i("upload", "image upload failed")
                         }
-                        .addOnSuccessListener { taskSnapshot ->
+                        .addOnSuccessListener {
                             Log.i("upload", "image upload done")
-                            val picture = ChatPicture(imageFile.name)
+                            val picture = ChatPicture(pictureUri.lastPathSegment!!)
                             drone.publish(roomId, ChatMessage(profileManager.myId, message, picture))
                         }
                 }
-
-
-                // Publish the message
-                //drone.publish(roomId, ChatMessage(profileManager.myId, message))
-
             }
             myView.clearPreviewImage()
             isSendingPicture = false

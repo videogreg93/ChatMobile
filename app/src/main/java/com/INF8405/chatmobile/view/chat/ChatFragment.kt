@@ -46,7 +46,7 @@ class ChatFragment : Fragment(), ChatContract.View {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        adapter = ChatAdapter(myId = ChatMobileManagers.profileManager.myId, context = requireActivity())
+        adapter = ChatAdapter(myId = ChatMobileManagers.profileManager.myId)
         messages.adapter = adapter
         messages.layoutManager = LinearLayoutManager(activity)
 
@@ -73,7 +73,7 @@ class ChatFragment : Fragment(), ChatContract.View {
             true
         }
 
-        preview_panel.visibility = View.INVISIBLE;
+        preview_panel.visibility = View.GONE
 
         close_preview.setOnClickListener {
             clearPreviewImage()
@@ -101,7 +101,7 @@ class ChatFragment : Fragment(), ChatContract.View {
 
     override fun clearPreviewImage() {
         preview_photo.setImageBitmap(null)
-        preview_panel.visibility = View.INVISIBLE
+        preview_panel.visibility = View.GONE
 
         // Tell the presenter to not send the picture with the message
         presenter.setSendingPicture(false)

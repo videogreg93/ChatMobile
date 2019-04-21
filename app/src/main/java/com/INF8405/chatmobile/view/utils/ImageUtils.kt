@@ -3,17 +3,16 @@ package com.INF8405.chatmobile.view.utils
 import android.graphics.Bitmap
 import android.graphics.Matrix
 import android.support.media.ExifInterface
-import java.io.ByteArrayInputStream
 import android.app.Activity
 import android.os.Environment
 import android.provider.Settings
-import java.io.File
-import java.io.IOException
+import android.util.Log
+import java.lang.Exception
 import java.nio.ByteBuffer
 import java.text.SimpleDateFormat
 import java.util.*
-
-
+import android.graphics.BitmapFactory
+import java.io.*
 
 
 object ImageUtils {
@@ -72,9 +71,43 @@ fun Activity.createImageFile(): File {
     // Create an image file name
     val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
     val androidId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID)
-    val pictureFile: String = "CHATMOBILE" + androidId + timeStamp;
+    val pictureFile = "CHATMOBILE$androidId$timeStamp"
     val storageDir: File = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
     val image: File = File.createTempFile(pictureFile, ".jpg", storageDir)
     ImageUtils.currentPhotoPath = image.absolutePath
     return image
+}
+
+fun Activity.saveImageFile(imageName: String, data: Bitmap) {
+    // Create an image file name
+    val storageDir: File = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+    val imageFile = File(storageDir.path, "$imageName.jpg")
+    val fos = FileOutputStream(imageFile)
+
+    try {
+        data.compress(Bitmap.CompressFormat.JPEG, 100, fos)
+    } catch(e: Exception) {
+        Log.e("ImageUtils", "Could not save image.")
+    } finally {
+        try {
+            fos.close()
+            Log.i("ImageUtils", "Image was saved successfully")
+
+        } catch (e: IOException) {
+            Log.e("ImageUtils", "Could not close file output stream.")
+        }
+    }
+}
+
+fun Activity.loadImageFile(imageName: String): Bitmap? {
+    // Create an image file name
+    val storageDir: File = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+    val imageFile = File(storageDir.path, "$imageName.jpg")
+
+    return try {
+        BitmapFactory.decodeStream(FileInputStream(imageFile))
+    } catch (e: FileNotFoundException) {
+        null
+    }
+
 }

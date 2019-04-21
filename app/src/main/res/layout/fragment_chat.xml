@@ -10,7 +10,7 @@
     <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
             app:layout_constraintBottom_toTopOf="@+id/inputs"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -26,7 +26,7 @@
                 android:id="@+id/messages"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-        />
+                app:layout_constraintBottom_toTopOf="@+id/inputs"/>
     </LinearLayout>
 
     <RelativeLayout
@@ -56,7 +56,7 @@
     </RelativeLayout>
     <TableLayout
             android:id="@+id/inputs"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

@@ -46,7 +46,7 @@ class ChatFragment : Fragment(), ChatContract.View {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        adapter = ChatAdapter(myId = ChatMobileManagers.profileManager.myId)
+        adapter = ChatAdapter(myId = ChatMobileManagers.profileManager.myId, fragmentActivity = this.activity)
         messages.adapter = adapter
         messages.layoutManager = LinearLayoutManager(activity)
 

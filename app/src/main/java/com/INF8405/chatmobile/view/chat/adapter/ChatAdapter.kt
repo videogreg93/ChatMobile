@@ -1,10 +1,11 @@
 package com.INF8405.chatmobile.view.chat.adapter
 
-import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.support.v4.app.FragmentActivity
 import android.support.v7.recyclerview.extensions.ListAdapter
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,13 +14,13 @@ import android.widget.TextView
 import com.INF8405.chatmobile.R
 import com.INF8405.chatmobile.models.ChatMessage
 import com.INF8405.chatmobile.system.managers.FirebaseManager
-import com.INF8405.chatmobile.view.chat.ChatFragment
-import com.bumptech.glide.Glide
+import com.INF8405.chatmobile.view.utils.loadImageFile
+import com.INF8405.chatmobile.view.utils.saveImageFile
+import com.google.firebase.storage.StorageReference
 import kotlinx.android.synthetic.main.item_chat_bubble_left.view.*
 import kotlinx.android.synthetic.main.item_chat_bubble_right.view.*
-import java.io.ByteArrayOutputStream
 
-class ChatAdapter(var items: ArrayList<ChatMessage> = ArrayList(), val myId: String) :
+class ChatAdapter(var items: ArrayList<ChatMessage> = ArrayList(), val myId: String, val fragmentActivity: FragmentActivity?) :
     ListAdapter<ChatMessage, ChatAdapter.ViewHolder>(DiffUtil()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -29,7 +30,7 @@ class ChatAdapter(var items: ArrayList<ChatMessage> = ArrayList(), val myId: Str
             MESSAGE_TYPE.LEFT -> LayoutInflater.from(parent.context)
                 .inflate(R.layout.item_chat_bubble_left, parent, false)
         }
-        return ViewHolder(view, viewType)
+        return ViewHolder(view, viewType, fragmentActivity)
 
     }
 
@@ -74,7 +75,7 @@ class ChatAdapter(var items: ArrayList<ChatMessage> = ArrayList(), val myId: Str
     }
 
 
-    class ViewHolder(val view: View, val viewType: Int) : RecyclerView.ViewHolder(view) {
+    class ViewHolder(val view: View, val viewType: Int, val fragmentActivity: FragmentActivity?) : RecyclerView.ViewHolder(view) {
         fun bindLeft(message: ChatMessage) {
             populateView(message, view.chat_text_left, view.imageView_left)
         }
@@ -90,18 +91,49 @@ class ChatAdapter(var items: ArrayList<ChatMessage> = ArrayList(), val myId: Str
                 val pictureName = message.picture!!.pictureId
                 val fileRef = FirebaseManager.getFileReference(pictureName)
 
+                try {
+                    val bmp = fragmentActivity?.loadImageFile(pictureName)
+                    // Load the image directly from internal storage
+                    if(bmp != null)
+                    {
+                        imageView.setImageBitmap(Bitmap.createScaledBitmap(bmp, bmp.width, bmp.height, false))
+                        Log.i("PopulateView", "Picture was loaded from local storage")
+                    }
+                    else {
+                        // Save it in internal storage
+                        loadImageFromFirebase(fragmentActivity, pictureName, imageView, fileRef)
+                        Log.i("PopulateView", "Picture was save in local storage and loaded from firebase")
 
-                fileRef.getBytes(FIVE_MEGABYTE).addOnSuccessListener { ByteArray ->
-                    val bmp: Bitmap = BitmapFactory.decodeByteArray(ByteArray, 0, ByteArray.size)
-                    imageView.setImageBitmap(Bitmap.createScaledBitmap(bmp, bmp.width, bmp.height, false))
+                    }
+                } catch (ex: Exception) {
+                    loadImageFromFirebase(imageView, fileRef)
+                    Log.i("PopulateView", "Picture was loaded from firebase")
+
                 }
 
-                // Not working...
-//                Glide.with(context)
-//                    .load(fileRef)
-//                    .into(imageView)
             } else {
                 imageView.visibility = View.GONE
+            }
+        }
+
+        /**
+         * Load the image from firebase, and display it
+         */
+        private fun loadImageFromFirebase(imageView: ImageView, fileRef: StorageReference) {
+            fileRef.getBytes(FIVE_MEGABYTE).addOnSuccessListener { ByteArray ->
+                val bmp: Bitmap = BitmapFactory.decodeByteArray(ByteArray, 0, ByteArray.size)
+                imageView.setImageBitmap(Bitmap.createScaledBitmap(bmp, bmp.width, bmp.height, false))
+            }
+        }
+
+        /**
+         * Load the image from firebase, save it in internal storage and display it
+         */
+        private fun loadImageFromFirebase(fragmentActivity: FragmentActivity?, imageName: String, imageView: ImageView, fileRef: StorageReference) {
+            fileRef.getBytes(FIVE_MEGABYTE).addOnSuccessListener { ByteArray ->
+                val bmp: Bitmap = BitmapFactory.decodeByteArray(ByteArray, 0, ByteArray.size)
+                fragmentActivity?.saveImageFile(imageName, bmp)
+                imageView.setImageBitmap(Bitmap.createScaledBitmap(bmp, bmp.width, bmp.height, false))
             }
         }
 

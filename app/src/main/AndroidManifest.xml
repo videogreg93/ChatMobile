@@ -7,6 +7,8 @@
                      android:maxSdkVersion="18"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+
 
     <application
             android:allowBackup="true"
@@ -51,6 +53,11 @@
                     android:name="android.support.FILE_PROVIDER_PATHS"
                     android:resource="@xml/file_paths"></meta-data>
         </provider>
+
+        <service
+                android:name=".service.FetchAddressIntentService"
+                android:exported="false"/>
+
 
     </application>
 

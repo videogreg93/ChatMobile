@@ -42,17 +42,25 @@
                 android:src="@android:drawable/ic_menu_close_clear_cancel"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
-                app:layout_constraintStart_toEndOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:fabCustomSize="20dp"
                 android:clickable="true"
                 app:backgroundTint="@color/colorPrimary"/>
         <ImageView
+                android:id="@+id/preview_photo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/preview_photo"
                 tools:src="@mipmap/ic_launcher"
                 android:padding="10dp"
         />
+        <TextView
+                android:id="@+id/current_address"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                app:layout_constraintTop_toTopOf="@id/preview_photo"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:padding="10dp"/>
     </RelativeLayout>
     <TableLayout
             android:id="@+id/inputs"

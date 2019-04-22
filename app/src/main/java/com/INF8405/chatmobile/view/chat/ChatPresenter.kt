@@ -83,7 +83,7 @@ class ChatPresenter(
             return (friend.uid + profileManager.myId)
     }
 
-    override fun sendMessage(message: String) {
+    override fun sendMessage(message: String, currentAddress: String?) {
         if (isSendingPicture) {
             val imageFile: File = File(ImageUtils.currentPhotoPath)
             if (imageFile.exists()) {
@@ -97,7 +97,7 @@ class ChatPresenter(
                         }
                         .addOnSuccessListener {
                             Log.i("upload", "image upload done")
-                            val picture = ChatPicture(pictureUri.lastPathSegment!!)
+                            val picture = ChatPicture(pictureUri.lastPathSegment!!, currentAddress)
                             drone.publish(roomId, ChatMessage(profileManager.myId, message, picture))
                         }
                 }

@@ -25,14 +25,27 @@
                 android:textColor="#FFFFFF"
                 android:background="@drawable/round_textbubble_left"
         />
-        <ImageView
-                android:id="@+id/imageView_left"
+        <LinearLayout
+                android:id="@+id/image_container_left"
+                android:orientation="vertical"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:adjustViewBounds="true"
-                android:maxHeight="300dp"
-                android:scaleType="fitCenter"/>
+                android:layout_margin="8dp">
+            <ImageView
+                    android:id="@+id/imageView_left"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:adjustViewBounds="true"
+                    android:maxHeight="300dp"
+                    android:scaleType="fitCenter"/>
+            <TextView
+                    android:text="address"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:id="@+id/picture_address_left"
+                    android:padding="8dp"
+                    android:textColor="#FFFFFF"
+                    android:background="@drawable/round_textbubble_left"/>
+        </LinearLayout>
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

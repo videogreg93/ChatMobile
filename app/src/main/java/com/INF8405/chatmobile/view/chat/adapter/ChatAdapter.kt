@@ -10,18 +10,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import com.INF8405.chatmobile.R
 import com.INF8405.chatmobile.models.ChatMessage
 import com.INF8405.chatmobile.system.managers.FirebaseManager
+import com.INF8405.chatmobile.view.chat.ChatFragment
 import com.INF8405.chatmobile.view.utils.loadImageFile
 import com.INF8405.chatmobile.view.utils.saveImageFile
+import com.google.android.gms.common.ErrorDialogFragment
 import com.google.firebase.storage.StorageReference
 import kotlinx.android.synthetic.main.item_chat_bubble_left.view.*
 import kotlinx.android.synthetic.main.item_chat_bubble_right.view.*
 
-class ChatAdapter(var items: ArrayList<ChatMessage> = ArrayList(), val myId: String, val fragmentActivity: FragmentActivity?) :
+class ChatAdapter(var items: ArrayList<ChatMessage> = ArrayList(), val myId: String, val fragment: ChatFragment) :
     ListAdapter<ChatMessage, ChatAdapter.ViewHolder>(DiffUtil()) {
+    var picturesMap: Map<String, Bitmap> = HashMap<String, Bitmap>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = when (MESSAGE_TYPE.values()[viewType]) {
@@ -30,7 +34,7 @@ class ChatAdapter(var items: ArrayList<ChatMessage> = ArrayList(), val myId: Str
             MESSAGE_TYPE.LEFT -> LayoutInflater.from(parent.context)
                 .inflate(R.layout.item_chat_bubble_left, parent, false)
         }
-        return ViewHolder(view, viewType, fragmentActivity)
+        return ViewHolder(view, viewType, fragment)
 
     }
 
@@ -75,44 +79,65 @@ class ChatAdapter(var items: ArrayList<ChatMessage> = ArrayList(), val myId: Str
     }
 
 
-    class ViewHolder(val view: View, val viewType: Int, val fragmentActivity: FragmentActivity?) : RecyclerView.ViewHolder(view) {
+    class ViewHolder(val view: View, val viewType: Int, val fragment: ChatFragment) : RecyclerView.ViewHolder(view) {
         fun bindLeft(message: ChatMessage) {
-            populateView(message, view.chat_text_left, view.imageView_left)
+            populateView(message, view.chat_text_left, view.imageView_left, view.picture_address_left ,view.image_container_left)
         }
 
         fun bindRight(message: ChatMessage) {
-            populateView(message, view.chat_text_right, view.imageView_right)
+            populateView(message, view.chat_text_right, view.imageView_right, view.picture_address_right, view.image_container_right)
         }
 
-        private fun populateView(message: ChatMessage, textView: TextView, imageView: ImageView) {
+        private fun populateView(message: ChatMessage,textView: TextView, imageView: ImageView, addressView: TextView, imageContainer: LinearLayout) {
             textView.text = message.text
             if(message.picture != null)
             {
                 val pictureName = message.picture!!.pictureId
                 val fileRef = FirebaseManager.getFileReference(pictureName)
 
-                try {
-                    val bmp = fragmentActivity?.loadImageFile(pictureName)
-                    // Load the image directly from internal storage
-                    if(bmp != null)
-                    {
-                        imageView.setImageBitmap(Bitmap.createScaledBitmap(bmp, bmp.width, bmp.height, false))
-                        Log.i("PopulateView", "Picture was loaded from local storage")
-                    }
-                    else {
-                        // Save it in internal storage
-                        loadImageFromFirebase(fragmentActivity, pictureName, imageView, fileRef)
-                        Log.i("PopulateView", "Picture was save in local storage and loaded from firebase")
+                if(fragment.picturesMap.containsKey(pictureName))
+                {
+                    val bmp = fragment.picturesMap.get(pictureName)!!
+                    imageView.setImageBitmap(Bitmap.createScaledBitmap(bmp, bmp.width, bmp.height, false))
+                    Log.i("PopulateView", "Picture was loaded from the hashmap")
+                }
+                else{
+                    try {
+                        val bmp = fragment.requireActivity().loadImageFile(pictureName)
+                        // Load the image directly from internal storage
+                        if(bmp != null)
+                        {
+                            imageView.setImageBitmap(Bitmap.createScaledBitmap(bmp, bmp.width, bmp.height, false))
+                            // Add the picture to the hashmap
+                            fragment.picturesMap.put(pictureName, bmp)
+                            Log.i("PopulateView", "Picture was loaded from local storage")
+                        }
+                        else {
+                            // Save it in internal storage
+                            loadImageFromFirebase(fragment.requireActivity(), pictureName, imageView, fileRef)
+                            Log.i("PopulateView", "Picture was save in local storage and loaded from firebase")
 
+                        }
+                    } catch (ex: Exception) {
+                        loadImageFromFirebase(imageView, fileRef)
+                        Log.i("PopulateView", "Picture was loaded from firebase")
                     }
-                } catch (ex: Exception) {
-                    loadImageFromFirebase(imageView, fileRef)
-                    Log.i("PopulateView", "Picture was loaded from firebase")
+                }
 
+
+
+
+                if(message?.picture?.place == null)
+                {
+                    addressView.visibility = View.GONE
+                }
+                else
+                {
+                    addressView.text = message?.picture?.place
                 }
 
             } else {
-                imageView.visibility = View.GONE
+                imageContainer.visibility = View.GONE
             }
         }
 

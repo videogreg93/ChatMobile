@@ -119,7 +119,8 @@ class ChatFragment : Fragment(), ChatContract.View {
 
     private fun autoScrollToEnd() {
         val rv: RecyclerView = requireActivity().findViewById(R.id.messages) as RecyclerView
-        rv.smoothScrollToPosition(adapter.itemCount - 1)
+        if(adapter.itemCount > 0)
+            rv.smoothScrollToPosition(adapter.itemCount - 1)
     }
 
     private fun handleSendButton(view: View, keyCode: Int, event: KeyEvent): Boolean {

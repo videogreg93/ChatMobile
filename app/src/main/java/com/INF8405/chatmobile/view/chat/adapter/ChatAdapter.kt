@@ -25,7 +25,6 @@ import kotlinx.android.synthetic.main.item_chat_bubble_right.view.*
 
 class ChatAdapter(var items: ArrayList<ChatMessage> = ArrayList(), val myId: String, val fragment: ChatFragment) :
     ListAdapter<ChatMessage, ChatAdapter.ViewHolder>(DiffUtil()) {
-    var picturesMap: Map<String, Bitmap> = HashMap<String, Bitmap>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = when (MESSAGE_TYPE.values()[viewType]) {
@@ -123,9 +122,6 @@ class ChatAdapter(var items: ArrayList<ChatMessage> = ArrayList(), val myId: Str
                         Log.i("PopulateView", "Picture was loaded from firebase")
                     }
                 }
-
-
-
 
                 if(message?.picture?.place == null)
                 {

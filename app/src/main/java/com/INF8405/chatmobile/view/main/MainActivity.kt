@@ -1,10 +1,14 @@
+/**
+ * Adapted from
+ * http://www.androidrey.com/android-location-settings-dialog-tutorial/
+ */
+
 package com.INF8405.chatmobile.view.main
 
 import android.Manifest.permission.*
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.os.Handler
 import android.support.design.widget.BottomNavigationView
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
@@ -17,13 +21,23 @@ import com.INF8405.chatmobile.view.home.HomeFragment
 import com.INF8405.chatmobile.view.login.LoginActivity
 import com.INF8405.chatmobile.view.profile.ProfileFragment
 import com.INF8405.chatmobile.view.utils.ViewUtils
-import com.google.android.gms.location.LocationServices
 import kotlinx.android.synthetic.main.activity_main.*
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.api.GoogleApiClient
+import com.google.android.gms.location.*
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.LocationSettingsResult
+import com.google.android.gms.location.LocationSettingsRequest
+import android.widget.Toast
+import com.google.android.gms.common.api.ResultCallback
 
 
+class MainActivity : AppCompatActivity(), MainContract.View, GoogleApiClient.ConnectionCallbacks,
+    GoogleApiClient.OnConnectionFailedListener, ResultCallback<LocationSettingsResult> {
 
-class MainActivity : AppCompatActivity(), MainContract.View {
     override lateinit var presenter: MainContract.Presenter
+    protected lateinit var googleApiClient: GoogleApiClient
+    protected lateinit var locationRequest: LocationRequest
 
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         // TODO replace default implementation
@@ -57,6 +71,18 @@ class MainActivity : AppCompatActivity(), MainContract.View {
 
         // Request user permissions
         requestUserPermissions()
+
+        googleApiClient = GoogleApiClient.Builder(this)
+            .addApi(LocationServices.API)
+            .addConnectionCallbacks(this)
+            .addOnConnectionFailedListener(this).build()
+
+        googleApiClient.connect()
+        locationRequest = LocationRequest.create()
+        locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+        locationRequest.interval = 30 * 1000
+        locationRequest.fastestInterval = 5 * 1000
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -97,13 +123,66 @@ class MainActivity : AppCompatActivity(), MainContract.View {
                 arrayOf(ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION),
                 REQUEST_LOCATION
             )
+        }
+    }
+
+    override protected fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CHECK_SETTINGS) {
+
+            if (resultCode != RESULT_OK) {
+                Toast.makeText(applicationContext, "GPS is not enabled", Toast.LENGTH_LONG).show()
+                finish()
+                // Restart app
+                startActivity(Intent(this@MainActivity, MainActivity::class.java))
+            }
 
         }
     }
 
+    override fun onConnected(bundle: Bundle?) {
+        val builder = LocationSettingsRequest.Builder()
+            .addLocationRequest(locationRequest)
+        builder.setAlwaysShow(true)
+        val result = LocationServices.SettingsApi.checkLocationSettings(
+            googleApiClient,
+            builder.build()
+        )
+
+        result.setResultCallback(this)
+    }
+
+    override fun onConnectionSuspended(p0: Int) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun onConnectionFailed(p0: ConnectionResult) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun onResult(locationSettingsResult: LocationSettingsResult) {
+        val status = locationSettingsResult.status
+        when (status.statusCode) {
+            LocationSettingsStatusCodes.RESOLUTION_REQUIRED -> {
+                try {
+                    status.startResolutionForResult(this, REQUEST_CHECK_SETTINGS)
+
+                } catch (e : Exception){
+                }
+            }
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if(googleApiClient.isConnected) {
+            googleApiClient.disconnect()
+        }
+    }
 
     companion object {
         const val REQUEST_LOCATION = 123
+        const val REQUEST_CHECK_SETTINGS = 100
     }
 
 }

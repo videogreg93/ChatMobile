@@ -5,6 +5,8 @@ import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.drawable.BitmapDrawable
 import android.location.Geocoder
 import android.location.Location
 import android.os.Bundle
@@ -15,6 +17,7 @@ import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.support.v4.content.FileProvider
 import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
@@ -25,15 +28,13 @@ import com.INF8405.chatmobile.models.Profile
 import com.INF8405.chatmobile.system.ChatMobileManagers
 import com.INF8405.chatmobile.view.chat.adapter.ChatAdapter
 import com.INF8405.chatmobile.view.profile.ProfileFragment
-import com.INF8405.chatmobile.view.utils.ImageUtils.getPortraitBitmap
-import com.INF8405.chatmobile.view.utils.ViewUtils
-import com.INF8405.chatmobile.view.utils.createImageFile
 import kotlinx.android.synthetic.main.fragment_chat.*
-import com.INF8405.chatmobile.view.utils.hideKeyboardFrom
 import java.io.File
 import java.io.IOException
 import android.widget.Toast
+import com.INF8405.chatmobile.R
 import com.INF8405.chatmobile.service.FetchAddressIntentService
+import com.INF8405.chatmobile.view.utils.*
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 
@@ -46,6 +47,8 @@ class ChatFragment : Fragment(), ChatContract.View {
     private var lastLocation: Location? = null
     private lateinit var resultReceiver: AddressResultReceiver
     private var currentAddress: String? = null
+    private var imageDataToSend: ByteArray? = null
+    private var sendingImage = false
     var picturesMap: HashMap<String, Bitmap> = HashMap()
 
 
@@ -71,6 +74,7 @@ class ChatFragment : Fragment(), ChatContract.View {
         adapter = ChatAdapter(myId = ChatMobileManagers.profileManager.myId, fragment = this)
         messages.adapter = adapter
         messages.layoutManager = LinearLayoutManager(activity)
+        preview_panel.visibility = View.GONE
 
         val profile = arguments?.getSerializable(PROFILE_ARG) as? Profile
         profile?.let {
@@ -84,18 +88,8 @@ class ChatFragment : Fragment(), ChatContract.View {
             presenter.connectToRoom(friend)
         }
         chat_input.setOnKeyListener { view, keyCode, event ->
-            if (event.action == KeyEvent.ACTION_DOWN &&
-                keyCode == KeyEvent.KEYCODE_ENTER
-            ) {
-                presenter.sendMessage(chat_input.text?.toString().orEmpty(), currentAddress)
-                hideKeyboardFrom(view)
-                chat_input.text?.clear()
-                messages.invalidate()
-            }
-            true
+            handleSendButton(view, keyCode, event)
         }
-
-        preview_panel.visibility = View.GONE
 
         close_preview.setOnClickListener {
             clearPreviewImage()
@@ -109,6 +103,7 @@ class ChatFragment : Fragment(), ChatContract.View {
 
     override fun onGetHistoricMessages(oldMessages: List<ChatMessage>) {
         adapter.addItems(oldMessages)
+        autoScrollToEnd()
     }
 
     override fun onNewMessage(message: ChatMessage, isHistoric: Boolean) {
@@ -119,14 +114,33 @@ class ChatFragment : Fragment(), ChatContract.View {
         } else {
             adapter.addItem(message)
         }
+        autoScrollToEnd()
     }
 
-    override fun clearPreviewImage() {
-        preview_photo.setImageBitmap(null)
-        preview_panel.visibility = View.GONE
+    private fun autoScrollToEnd() {
+        val rv: RecyclerView = requireActivity().findViewById(R.id.messages) as RecyclerView
+        rv.smoothScrollToPosition(adapter.itemCount - 1)
+    }
 
-        // Tell the presenter to not send the picture with the message
-        presenter.setSendingPicture(false)
+    private fun handleSendButton(view: View, keyCode: Int, event: KeyEvent): Boolean {
+        if (event.action == KeyEvent.ACTION_DOWN &&
+            keyCode == KeyEvent.KEYCODE_ENTER
+        ) {
+            val message = chat_input.text?.toString().orEmpty()
+            if(sendingImage) {
+                val imageName = "${requireActivity().getNewImageFileName()}_compressed"
+                presenter.sendMessageWithImage(message, imageDataToSend!!, currentAddress, imageName)
+                picturesMap.put(imageName, (preview_photo.drawable as BitmapDrawable).bitmap)
+                clearPreviewImage()
+            }
+            else {
+                presenter.sendMessage(message)
+            }
+            hideKeyboardFrom(view)
+            chat_input.text?.clear()
+            messages.invalidate()
+        }
+        return true
     }
 
 
@@ -155,24 +169,36 @@ class ChatFragment : Fragment(), ChatContract.View {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             val originalBitmap = data?.extras?.get("data") as Bitmap
+
+            // Compress the data
+            imageDataToSend = ImageUtils.compressImageToBitArray(originalBitmap, 50) ?: return
+
+            val compressedBitmap = BitmapFactory.decodeByteArray(imageDataToSend, 0, imageDataToSend!!.size)
+
             // Set preview image
-            preview_photo.setImageBitmap(getPortraitBitmap(originalBitmap))
+            preview_photo.setImageBitmap(compressedBitmap)
 
             // Request current address
             fetchCurrentAddress()
+
+            // Set preview image visible
+            setPicturePreview()
         }
     }
 
-    fun setPicturePreview() {
-        current_address.text = currentAddress
+    private fun setPicturePreview() {
         preview_panel.visibility = View.VISIBLE
-
-        // Tell the presenter to send the picture with the message
-        presenter.setSendingPicture(true)
+        sendingImage = true
     }
 
+    private fun clearPreviewImage() {
+        // Delete picture to send
+        imageDataToSend = null
+        preview_photo.setImageBitmap(null)
+        preview_panel.visibility = View.GONE
 
-
+        sendingImage = false
+    }
 
     private fun startIntentService() {
 
@@ -199,10 +225,13 @@ class ChatFragment : Fragment(), ChatContract.View {
 
             if (!Geocoder.isPresent()) {
                 Log.e("fetchCurrentAddress", "Geocoder not available")
+                Toast.makeText(context, "Could not access to user location", Toast.LENGTH_LONG).show()
                 return@addOnSuccessListener
             }
 
             Log.i("fetchCurrentAddress", "current location fetched")
+            Toast.makeText(context, "Current address found !", Toast.LENGTH_LONG).show()
+
             // Start service and update UI to reflect new location
             startIntentService()
         }
@@ -213,22 +242,22 @@ class ChatFragment : Fragment(), ChatContract.View {
     internal inner class AddressResultReceiver(handler: Handler) : ResultReceiver(handler) {
 
         override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
-
-            // Display the address string
-            // or an error message sent from the intent service.
             currentAddress = resultData?.getString(FetchAddressIntentService.Constants.RESULT_DATA_KEY) ?: ""
-            // TODO call ChatPicture constructor
 
             // Show a toast message if an address was found.
             if (resultCode == FetchAddressIntentService.Constants.SUCCESS_RESULT) {
                 Toast.makeText(context, currentAddress, Toast.LENGTH_LONG).show()
-                setPicturePreview()
             } else {
                 Toast.makeText(context, "Current address not found", Toast.LENGTH_LONG).show()
-                setPicturePreview()
             }
-
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        fusedLocationClient.flushLocations()
+        picturesMap.clear()
+        imageDataToSend = null
     }
 
 

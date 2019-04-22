@@ -1,8 +1,6 @@
 package com.INF8405.chatmobile.view.chat
 
-import android.net.Uri
 import android.util.Log
-import android.widget.Toast
 
 
 import com.INF8405.chatmobile.models.ChatMessage
@@ -12,15 +10,10 @@ import com.INF8405.chatmobile.system.ChatMobileManagers
 import com.INF8405.chatmobile.system.managers.FirebaseManager
 import com.INF8405.chatmobile.system.managers.ProfileManager
 import com.INF8405.chatmobile.system.managers.ScaledroneManager
-import com.INF8405.chatmobile.view.utils.ImageUtils
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.google.android.gms.tasks.OnSuccessListener
-import com.google.firebase.storage.UploadTask
 
 import com.scaledrone.lib.*
 import kotlinx.coroutines.*
-import java.io.File
-import kotlin.contracts.contract
 
 class ChatPresenter(
     override var myView: ChatContract.View,
@@ -30,12 +23,10 @@ class ChatPresenter(
 ) : ChatContract.Presenter {
     lateinit var drone: Scaledrone
     lateinit var roomId: String
-    private var isSendingPicture: Boolean
 
 
     init {
         myView.presenter = this
-        isSendingPicture = false
     }
 
     override fun connectToRoom(friend: Profile) {
@@ -83,33 +74,28 @@ class ChatPresenter(
             return (friend.uid + profileManager.myId)
     }
 
-    override fun sendMessage(message: String, currentAddress: String?) {
-        if (isSendingPicture) {
-            val imageFile: File = File(ImageUtils.currentPhotoPath)
-            if (imageFile.exists()) {
-                // Send the picture to firebase
-                GlobalScope.async {
-                    val pictureUri = Uri.fromFile(imageFile);
-                    firebaseManager.savePicture(pictureUri)
-                        .addOnFailureListener {
-                            // Handle unsuccessful download
-                            Log.i("upload", "image upload failed")
-                        }
-                        .addOnSuccessListener {
-                            Log.i("upload", "image upload done")
-                            val picture = ChatPicture(pictureUri.lastPathSegment!!, currentAddress)
-                            drone.publish(roomId, ChatMessage(profileManager.myId, message, picture))
-                        }
-                }
-            }
-            myView.clearPreviewImage()
-            isSendingPicture = false
-        } else {
+    override fun sendMessage(message: String) {
             drone.publish(roomId, ChatMessage(profileManager.myId, message))
-        }
     }
 
-    override fun setSendingPicture(isSending: Boolean) {
-        isSendingPicture = isSending
+    override fun sendMessageWithImage(
+        message: String,
+        imageData: ByteArray,
+        currentAddress: String?,
+        imageName: String
+    ) {
+        // Send the picture to firebase
+        GlobalScope.async {
+            firebaseManager.savePictureFromBytes(imageName, imageData)
+                .addOnFailureListener {
+                    // Handle unsuccessful download
+                    Log.i("upload", "image upload failed")
+                }
+                .addOnSuccessListener {
+                    Log.i("upload", "image upload done")
+                    val picture = ChatPicture(imageName, currentAddress)
+                    drone.publish(roomId, ChatMessage(profileManager.myId, message, picture))
+                }
+        }
     }
 }

@@ -53,6 +53,13 @@ object ImageUtils {
         }
     }
 
+    fun compressImageToBitArray(bitmap: Bitmap, quality: Int): ByteArray? {
+        val baos = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, quality, baos)
+
+        return baos.toByteArray()
+    }
+
     private fun rotateImage(source: Bitmap, angle: Float): Bitmap {
         val matrix = Matrix()
         matrix.postRotate(angle)
@@ -61,21 +68,19 @@ object ImageUtils {
             matrix, true
         )
     }
-
-
-
 }
 
 @Throws(IOException::class)
 fun Activity.createImageFile(): File {
-    // Create an image file name
+    val pictureFile = getNewImageFileName()
+    val storageDir: File = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+    return File.createTempFile(pictureFile, ".jpg", storageDir)
+}
+
+fun Activity.getNewImageFileName(): String {
     val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
     val androidId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID)
-    val pictureFile = "CHATMOBILE$androidId$timeStamp"
-    val storageDir: File = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-    val image: File = File.createTempFile(pictureFile, ".jpg", storageDir)
-    ImageUtils.currentPhotoPath = image.absolutePath
-    return image
+    return "CHATMOBILE$androidId$timeStamp"
 }
 
 fun Activity.saveImageFile(imageName: String, data: Bitmap) {
@@ -109,5 +114,4 @@ fun Activity.loadImageFile(imageName: String): Bitmap? {
     } catch (e: FileNotFoundException) {
         null
     }
-
 }

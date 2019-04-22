@@ -48,11 +48,17 @@ class FirebaseManager {
         return messagesRef.child(roomId).orderByKey().readList<ChatMessage>().map { it.second }
     }
 
-    fun savePicture(pictureUri: Uri): UploadTask
+    fun savePictureFromUri(pictureUri: Uri): UploadTask
     {
         val cloudFileId: String = pictureUri.lastPathSegment!!
         val uploadRef = storageRef.child(cloudFileId)
         return uploadRef.putFile(pictureUri)
+    }
+
+    fun savePictureFromBytes(cloudFileId: String, data: ByteArray): UploadTask
+    {
+        val uploadRef = storageRef.child(cloudFileId)
+        return uploadRef.putBytes(data)
     }
 
     companion object {

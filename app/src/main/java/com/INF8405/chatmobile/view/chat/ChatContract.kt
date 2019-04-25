@@ -7,7 +7,7 @@ import com.INF8405.chatmobile.view.base.BaseView
 
 interface ChatContract {
     interface View : BaseView<Presenter> {
-        fun onNewMessage(message: ChatMessage, isHistoric: Boolean = false)
+        fun onNewMessage(message: ChatMessage)
         abstract fun onGetHistoricMessages(oldMessages: List<ChatMessage>)
     }
 

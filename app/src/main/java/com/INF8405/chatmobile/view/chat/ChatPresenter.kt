@@ -46,7 +46,6 @@ class ChatPresenter(
                     GlobalScope.launch {
                         val mapper = ObjectMapper()
                         val chatMessage = mapper.treeToValue(message.data, ChatMessage::class.java)
-                        firebaseManager.saveMessage(roomId,chatMessage)
                         withContext(Dispatchers.Main) {
                             myView.onNewMessage(chatMessage)
                         }
@@ -75,7 +74,10 @@ class ChatPresenter(
     }
 
     override fun sendMessage(message: String) {
+        GlobalScope.launch {
             drone.publish(roomId, ChatMessage(profileManager.myId, message))
+            firebaseManager.saveMessage(roomId, ChatMessage(profileManager.myId, message))
+        }
     }
 
     override fun sendMessageWithImage(

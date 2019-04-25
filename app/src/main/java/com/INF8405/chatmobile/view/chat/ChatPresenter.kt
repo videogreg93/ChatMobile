@@ -94,9 +94,12 @@ class ChatPresenter(
                     Log.i("upload", "image upload failed")
                 }
                 .addOnSuccessListener {
-                    Log.i("upload", "image upload done")
-                    val picture = ChatPicture(imageName, currentAddress)
-                    drone.publish(roomId, ChatMessage(profileManager.myId, message, picture))
+                    GlobalScope.launch {
+                        Log.i("upload", "image upload done")
+                        val picture = ChatPicture(imageName, currentAddress)
+                        drone.publish(roomId, ChatMessage(profileManager.myId, message, picture))
+                        firebaseManager.saveMessage(roomId, ChatMessage(profileManager.myId, message, picture))
+                    }
                 }
         }
     }

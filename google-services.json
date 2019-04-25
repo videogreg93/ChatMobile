@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "203568988693",
+    "firebase_url": "https://chatmobile-34ead.firebaseio.com",
+    "project_id": "chatmobile-34ead",
+    "storage_bucket": "chatmobile-34ead.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:203568988693:android:4b3f6d63e0fcda41",
+        "android_client_info": {
+          "package_name": "com.INF8405.chatmobile"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "203568988693-sfigvcvecdhup6ici00m0iupu9hgr76c.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.INF8405.chatmobile",
+            "certificate_hash": "b2c3ae8be2f5fd7bb52b3e3365f6d06706af7ac0"
+          }
+        },
+        {
+          "client_id": "203568988693-ificnl5ut0qkeft5cer6fpk0n2kfii4e.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDyr7fONbwBxUOknKy_qeSZ_td7wYs2O-4"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "203568988693-ificnl5ut0qkeft5cer6fpk0n2kfii4e.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

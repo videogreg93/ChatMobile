@@ -9,6 +9,7 @@ import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import android.location.Geocoder
 import android.location.Location
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.ResultReceiver
@@ -50,6 +51,8 @@ class ChatFragment : Fragment(), ChatContract.View {
     private var imageDataToSend: ByteArray? = null
     private var sendingImage = false
     var picturesMap: HashMap<String, Bitmap> = HashMap()
+
+    lateinit var photoURI: Uri
 
 
     override fun onCreateView(
@@ -158,7 +161,7 @@ class ChatFragment : Fragment(), ChatContract.View {
             }
 
             if (pictureFile != null) {
-                val photoURI = FileProvider.getUriForFile(requireContext(),"com.INF8405.chatmobile", pictureFile)
+                photoURI = FileProvider.getUriForFile(requireContext(),"com.INF8405.chatmobile", pictureFile)
                 cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
                 startActivityForResult(cameraIntent, REQUEST_IMAGE_CAPTURE)
             }
@@ -169,7 +172,8 @@ class ChatFragment : Fragment(), ChatContract.View {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            val originalBitmap = data?.extras?.get("data") as Bitmap
+            //val originalBitmap = data?.extras?.get("data") as Bitmap
+            val originalBitmap = MediaStore.Images.Media.getBitmap(activity?.getContentResolver(), photoURI);
 
             // Compress the data
             imageDataToSend = ImageUtils.compressImageToBitArray(originalBitmap, 50) ?: return

@@ -44,8 +44,8 @@ class ChatFragment : Fragment(), ChatContract.View {
     override lateinit var presenter: ChatContract.Presenter
     lateinit var friend: Profile
     lateinit var adapter: ChatAdapter
-    private lateinit var fusedLocationClient: FusedLocationProviderClient
-    private lateinit var lastLocation: Location
+    private var fusedLocationClient: FusedLocationProviderClient? = null
+    private var lastLocation: Location = Location("")
     private lateinit var resultReceiver: AddressResultReceiver
     private var currentAddress: String? = null
     private var imageDataToSend: ByteArray? = null
@@ -110,6 +110,7 @@ class ChatFragment : Fragment(), ChatContract.View {
     }
 
     override fun onNewMessage(message: ChatMessage) {
+        println("New Message")
         adapter.addItem(message)
         autoScrollToEnd()
     }
@@ -201,7 +202,6 @@ class ChatFragment : Fragment(), ChatContract.View {
     }
 
     private fun startIntentService() {
-
         val intent = Intent(activity, FetchAddressIntentService::class.java).apply {
             putExtra(FetchAddressIntentService.Constants.RECEIVER, resultReceiver)
             putExtra(FetchAddressIntentService.Constants.LOCATION_DATA_EXTRA, lastLocation)
@@ -224,7 +224,7 @@ class ChatFragment : Fragment(), ChatContract.View {
             return
         }
 
-        fusedLocationClient.lastLocation.addOnSuccessListener { location: Location ->
+        fusedLocationClient?.lastLocation?.addOnSuccessListener { location: Location ->
             lastLocation = location
 
             if (lastLocation == null) return@addOnSuccessListener
@@ -261,7 +261,7 @@ class ChatFragment : Fragment(), ChatContract.View {
 
     override fun onDestroy() {
         super.onDestroy()
-        fusedLocationClient.flushLocations()
+        fusedLocationClient?.flushLocations()
         picturesMap.clear()
         imageDataToSend = null
     }

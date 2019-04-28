@@ -1,22 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"  xmlns:tools="http://schemas.android.com/tools"
           package="com.INF8405.chatmobile">
-
-    <!--
-         The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
-         Google Maps Android API v2, but you must specify either coarse or fine
-         location permissions for the 'MyLocation' functionality.
-    -->
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission
-            android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-            android:maxSdkVersion="18"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+                     android:maxSdkVersion="18"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.UPDATE_DEVICE_STATS" tools:ignore="ProtectedPermissions"/>
+    <uses-permission
+            android:name="android.permission.PACKAGE_USAGE_STATS"
+            tools:ignore="ProtectedPermissions"/>
     <application
             android:allowBackup="true"
             android:icon="@mipmap/ic_launcher"
@@ -79,6 +75,11 @@
         <service
                 android:name=".service.FetchAddressIntentService"
                 android:exported="false"/>
+
+        <service
+                android:name="com.INF8405.chatmobile.system.services.stats.StatsIntentService"
+                android:exported="false"
+        />
     </application>
 
 </manifest>

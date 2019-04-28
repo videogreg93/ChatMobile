@@ -16,6 +16,7 @@ import com.INF8405.chatmobile.R
 import com.INF8405.chatmobile.models.ChatMessage
 import com.INF8405.chatmobile.system.managers.FirebaseManager
 import com.INF8405.chatmobile.view.chat.ChatFragment
+import com.INF8405.chatmobile.view.utils.ImageUtils.FIVE_MEGABYTE
 import com.INF8405.chatmobile.view.utils.loadImageFile
 import com.INF8405.chatmobile.view.utils.saveImageFile
 import com.google.android.gms.common.ErrorDialogFragment
@@ -158,9 +159,6 @@ class ChatAdapter(var items: ArrayList<ChatMessage> = ArrayList(), val myId: Str
             }
         }
 
-        companion object {
-            const val ONE_MEGABYTE: Long = 1024 * 2014
-            const val FIVE_MEGABYTE: Long = ONE_MEGABYTE * 5
-        }
+
     }
 }

@@ -1,6 +1,5 @@
 package com.INF8405.chatmobile.models
 
-import com.google.android.libraries.places.api.model.Place
 
 data class ChatPicture(var pictureId: String = "", var place: String? = null) {
     override fun equals(other: Any?): Boolean {

@@ -29,7 +29,10 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsResult
 import com.google.android.gms.location.LocationSettingsRequest
 import android.widget.Toast
+import com.INF8405.chatmobile.view.map.MapFragment
 import com.google.android.gms.common.api.ResultCallback
+
+
 
 
 class MainActivity : AppCompatActivity(), MainContract.View, GoogleApiClient.ConnectionCallbacks,
@@ -45,6 +48,13 @@ class MainActivity : AppCompatActivity(), MainContract.View, GoogleApiClient.Con
         when (item.itemId) {
             R.id.navigation_home -> {
                 ViewUtils.displayFragmentWithoutArgs(this, HomeFragment(), false)
+                return@OnNavigationItemSelectedListener true
+            }
+            R.id.navigation_map -> {
+                val myId = ChatMobileManagers.profileManager.myId
+                val bundle = Bundle()
+                bundle.putString(ProfileFragment.ID_ARG, myId)
+                ViewUtils.displayFragmentWithArgs(this, MapFragment(), false, bundle)
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_profile -> {

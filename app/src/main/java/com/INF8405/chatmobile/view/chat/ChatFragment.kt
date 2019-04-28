@@ -45,7 +45,7 @@ class ChatFragment : Fragment(), ChatContract.View {
     lateinit var friend: Profile
     lateinit var adapter: ChatAdapter
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-    private var lastLocation: Location? = null
+    private lateinit var lastLocation: Location
     private lateinit var resultReceiver: AddressResultReceiver
     private var currentAddress: String? = null
     private var imageDataToSend: ByteArray? = null
@@ -133,7 +133,7 @@ class ChatFragment : Fragment(), ChatContract.View {
             val message = chat_input.text?.toString().orEmpty()
             if(sendingImage) {
                 val imageName = "${requireActivity().getNewImageFileName()}_compressed"
-                presenter.sendMessageWithImage(message, imageDataToSend!!, currentAddress, imageName)
+                presenter.sendMessageWithImage(message, imageDataToSend!!, currentAddress, imageName, lastLocation, friend.uid)
                 picturesMap.put(imageName, (preview_photo.drawable as BitmapDrawable).bitmap)
                 clearPreviewImage()
             }
@@ -223,7 +223,7 @@ class ChatFragment : Fragment(), ChatContract.View {
             return
         }
 
-        fusedLocationClient?.lastLocation?.addOnSuccessListener { location: Location? ->
+        fusedLocationClient.lastLocation.addOnSuccessListener { location: Location ->
             lastLocation = location
 
             if (lastLocation == null) return@addOnSuccessListener

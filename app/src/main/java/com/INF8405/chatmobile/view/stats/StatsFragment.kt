@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.provider.Settings.ACTION_USAGE_ACCESS_SETTINGS
 import android.content.Intent
+import android.widget.Toast
 import com.INF8405.chatmobile.system.services.stats.StatsResultReceiver
 import java.io.Serializable
 import java.lang.ref.WeakReference
@@ -14,7 +15,7 @@ import com.INF8405.chatmobile.R
 import com.INF8405.chatmobile.system.services.stats.StatsIntentService
 import kotlinx.android.synthetic.main.fragment_stats.*
 
-class StatsFragment: Fragment(),  StatsContract.View {
+class StatsFragment : Fragment(), StatsContract.View {
     override lateinit var presenter: StatsContract.Presenter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -35,6 +36,10 @@ class StatsFragment: Fragment(),  StatsContract.View {
         StatsIntentService.startService(requireContext(), TimedResultReceiver(this))
     }
 
+    override fun onError() {
+        Toast.makeText(context, "Stats are not available for your device", Toast.LENGTH_SHORT).show()
+    }
+
     private inner class TimedResultReceiver(fragment: StatsFragment) : StatsResultReceiver.ResultReceiverCallback<Int> {
         private val fragmentRef: WeakReference<StatsFragment>?
 
@@ -43,14 +48,14 @@ class StatsFragment: Fragment(),  StatsContract.View {
         }
 
         override fun onSuccess(download: Serializable, upload: Serializable) {
-            if (fragmentRef?.get() != null) {
-                fragmentRef.get()!!.bandwidth_download.text = download.toString()
-                fragmentRef.get()!!.bandwidth_upload.text = upload.toString()
+            fragmentRef?.get()?.let { statsFragment ->
+                statsFragment.bandwidth_download?.text = "Download ${download.toString()} mb/s "
+                statsFragment.bandwidth_upload?.text = "Upload ${upload.toString()} mb/s"
             }
         }
 
         override fun onError(e: Exception) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            Toast.makeText(context, "Stats are not available for your device", Toast.LENGTH_SHORT).show()
         }
     }
 }

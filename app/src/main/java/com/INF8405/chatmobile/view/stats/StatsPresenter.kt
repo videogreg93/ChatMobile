@@ -26,13 +26,16 @@ class StatsPresenter (
             val appOps = context.getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
             val mode = appOps.checkOpNoThrow(
                 AppOpsManager.OPSTR_GET_USAGE_STATS,
-                android.os.Process.myPid(),
-                ClassUtil.getPackageName(this.javaClass))
+                android.os.Process.myUid(),
+                context.getPackageName())
 
             if (mode == AppOpsManager.MODE_ALLOWED) {
                 return true
             }
         } catch (e: Exception) {
+            e.printStackTrace()
+            myView.onError()
+            return true
         }
 
         return false

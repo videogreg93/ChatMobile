@@ -86,6 +86,8 @@ class StatsIntentService : IntentService("com.INF8405.chatmobile.system.services
 
     companion object {
         fun startService(context: Context, resultReceiverCallBack: StatsResultReceiver.ResultReceiverCallback<Int>) {
+            if (started)
+                return
             val statsResultReceiver =
                 StatsResultReceiver<Int>(Handler(context.mainLooper))
             statsResultReceiver.setReceiver(resultReceiverCallBack)
@@ -93,6 +95,8 @@ class StatsIntentService : IntentService("com.INF8405.chatmobile.system.services
             val intent = Intent(context, StatsIntentService::class.java)
             intent.putExtra(PARAM.RESULT_RECEIVER.name, statsResultReceiver)
             context.startService(intent)
+            started = true
         }
+        private var started = false
     }
 }

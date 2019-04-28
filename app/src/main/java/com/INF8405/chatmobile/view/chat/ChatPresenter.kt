@@ -1,19 +1,21 @@
 package com.INF8405.chatmobile.view.chat
 
+import android.location.Location
+import android.util.Log
+
+
 import com.INF8405.chatmobile.models.ChatMessage
+import com.INF8405.chatmobile.models.ChatPicture
+import com.INF8405.chatmobile.models.MapMarker
 import com.INF8405.chatmobile.models.Profile
 import com.INF8405.chatmobile.system.ChatMobileManagers
 import com.INF8405.chatmobile.system.managers.FirebaseManager
 import com.INF8405.chatmobile.system.managers.ProfileManager
 import com.INF8405.chatmobile.system.managers.ScaledroneManager
-
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.scaledrone.lib.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
+import com.scaledrone.lib.*
+import kotlinx.coroutines.*
 
 class ChatPresenter(
     override var myView: ChatContract.View,
@@ -75,6 +77,37 @@ class ChatPresenter(
     }
 
     override fun sendMessage(message: String) {
-        drone.publish(roomId, ChatMessage(profileManager.myId, message))
+            drone.publish(roomId, ChatMessage(profileManager.myId, message))
+    }
+
+    override fun sendMessageWithImage(
+        message: String,
+        imageData: ByteArray,
+        currentAddress: String?,
+        imageName: String,
+        location: Location,
+        friendId: String
+    ) {
+        // Send the picture to firebase
+        GlobalScope.async {
+            firebaseManager.savePictureFromBytes(imageName, imageData)
+                .addOnFailureListener {
+                    // Handle unsuccessful download
+                    Log.i("upload", "image upload failed")
+                }
+                .addOnSuccessListener {
+                    Log.i("upload", "image upload done")
+                    val picture = ChatPicture(imageName, currentAddress)
+                    // Send message
+                    drone.publish(roomId, ChatMessage(profileManager.myId, message, picture))
+
+                    // Add new marker to sender
+                    val marker = MapMarker(senderName = profileManager.myName, pictureId = imageName, latitude = location.latitude, longitude = location.longitude, address = currentAddress)
+                    GlobalScope.async {
+                        firebaseManager.addMapMarkerToUser(profileManager.myId, marker)
+                        firebaseManager.addMapMarkerToUser(friendId, marker)
+                    }
+                }
+        }
     }
 }

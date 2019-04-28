@@ -4,6 +4,7 @@ import com.INF8405.chatmobile.models.Profile
 
 class ProfileManager(val firebaseManager: FirebaseManager) {
     lateinit var myId: String
+    lateinit var myName: String
 
     suspend fun getMyProfile(): Profile {
         return getProfile(myId)

@@ -20,6 +20,7 @@ import com.INF8405.chatmobile.system.ChatMobileManagers
 import com.INF8405.chatmobile.view.home.HomeFragment
 import com.INF8405.chatmobile.view.login.LoginActivity
 import com.INF8405.chatmobile.view.profile.ProfileFragment
+import com.INF8405.chatmobile.view.stats.StatsFragment
 import com.INF8405.chatmobile.view.utils.ViewUtils
 import kotlinx.android.synthetic.main.activity_main.*
 import com.google.android.gms.common.ConnectionResult
@@ -62,6 +63,10 @@ class MainActivity : AppCompatActivity(), MainContract.View, GoogleApiClient.Con
                 val bundle = Bundle()
                 bundle.putString(ProfileFragment.ID_ARG, myId)
                 ViewUtils.displayFragmentWithArgs(this, ProfileFragment(), false, bundle)
+                return@OnNavigationItemSelectedListener true
+            }
+            R.id.navigation_stats -> {
+                ViewUtils.displayFragmentWithoutArgs(this, StatsFragment(), false)
                 return@OnNavigationItemSelectedListener true
             }
         }

@@ -14,6 +14,8 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        // Enabling multidex support.
+        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -52,9 +54,13 @@ dependencies {
 
 //    Location
     implementation 'com.google.android.gms:play-services-location:16.0.0'
+    // Place
+    implementation 'com.google.android.libraries.places:places:1.0.0'
 //    Maps
     implementation 'com.google.android.gms:play-services-maps:16.1.0'
 
+
     implementation 'com.android.support:recyclerview-v7:28.0.0'
+    implementation 'com.android.support:multidex:1.0.0'
 
 }

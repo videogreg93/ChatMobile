@@ -22,14 +22,17 @@ class StatsPresenter (
 
     override fun checkPermission(context: Context): Boolean {
         // check usage access settings
-        val appOps = context.getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
-        val mode = appOps.checkOpNoThrow(
-            AppOpsManager.OPSTR_GET_USAGE_STATS,
-            android.os.Process.myPid(),
-            ClassUtil.getPackageName(this.javaClass))
+        try {
+            val appOps = context.getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
+            val mode = appOps.checkOpNoThrow(
+                AppOpsManager.OPSTR_GET_USAGE_STATS,
+                android.os.Process.myPid(),
+                ClassUtil.getPackageName(this.javaClass))
 
-        if (mode == AppOpsManager.MODE_ALLOWED) {
-            return true
+            if (mode == AppOpsManager.MODE_ALLOWED) {
+                return true
+            }
+        } catch (e: Exception) {
         }
 
         return false

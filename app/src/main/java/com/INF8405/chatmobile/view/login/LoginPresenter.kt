@@ -40,6 +40,7 @@ class  LoginPresenter(
                         // Add user to UserTable if not there
                         firebaseManager.addUser(Profile(user))
                         profileManager.myId = user.uid
+                        profileManager.myName = user.displayName?:""
                         withContext(Dispatchers.Main) {
                             myView.doOnAuthentication()
                         }
@@ -68,6 +69,7 @@ class  LoginPresenter(
         GlobalScope.launch {
             firebaseManager.mAuth.currentUser?.let {user ->
                 profileManager.myId = user.uid
+                profileManager.myName = user.displayName?:""
                 withContext(Dispatchers.Main) {
                     myView.doOnAuthentication()
                 }
@@ -89,6 +91,7 @@ class  LoginPresenter(
                             // Add user to UserTable if not there
                             firebaseManager.addUser(Profile(user))
                             profileManager.myId = user.uid
+                            profileManager.myName = user.displayName?:""
                             withContext(Dispatchers.Main) {
                                 myView.doOnAuthentication()
                             }

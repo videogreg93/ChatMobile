@@ -1,10 +1,12 @@
 package com.INF8405.chatmobile.view.chat
 
+import android.location.Location
 import android.util.Log
 
 
 import com.INF8405.chatmobile.models.ChatMessage
 import com.INF8405.chatmobile.models.ChatPicture
+import com.INF8405.chatmobile.models.MapMarker
 import com.INF8405.chatmobile.models.Profile
 import com.INF8405.chatmobile.system.ChatMobileManagers
 import com.INF8405.chatmobile.system.managers.FirebaseManager
@@ -84,7 +86,9 @@ class ChatPresenter(
         message: String,
         imageData: ByteArray,
         currentAddress: String?,
-        imageName: String
+        imageName: String,
+        location: Location,
+        friendId: String
     ) {
         // Send the picture to firebase
         GlobalScope.async {
@@ -99,6 +103,17 @@ class ChatPresenter(
                         val picture = ChatPicture(imageName, currentAddress)
                         drone.publish(roomId, ChatMessage(profileManager.myId, message, picture))
                         firebaseManager.saveMessage(roomId, ChatMessage(profileManager.myId, message, picture))
+                        // Add new marker to sender
+                        val marker = MapMarker(
+                            senderName = profileManager.myName,
+                            pictureId = imageName,
+                            latitude = location.latitude,
+                            longitude = location.longitude,
+                            address = currentAddress
+                        )
+                        firebaseManager.addMapMarkerToUser(profileManager.myId, marker)
+                        firebaseManager.addMapMarkerToUser(friendId, marker)
+
                     }
                 }
         }

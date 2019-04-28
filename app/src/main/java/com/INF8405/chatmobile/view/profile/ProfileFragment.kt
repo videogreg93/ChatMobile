@@ -1,7 +1,8 @@
 package com.INF8405.chatmobile.view.profile
 
-
 import android.content.pm.PackageManager
+import android.app.usage.NetworkStats
+import android.app.usage.NetworkStatsManager
 import android.graphics.drawable.Drawable
 import android.nfc.NfcAdapter
 import android.os.Build

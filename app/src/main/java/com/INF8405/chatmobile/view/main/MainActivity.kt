@@ -20,6 +20,7 @@ import com.INF8405.chatmobile.system.ChatMobileManagers
 import com.INF8405.chatmobile.view.home.HomeFragment
 import com.INF8405.chatmobile.view.login.LoginActivity
 import com.INF8405.chatmobile.view.profile.ProfileFragment
+import com.INF8405.chatmobile.view.stats.StatsFragment
 import com.INF8405.chatmobile.view.utils.ViewUtils
 import kotlinx.android.synthetic.main.activity_main.*
 import com.google.android.gms.common.ConnectionResult
@@ -29,7 +30,10 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsResult
 import com.google.android.gms.location.LocationSettingsRequest
 import android.widget.Toast
+import com.INF8405.chatmobile.view.map.MapFragment
 import com.google.android.gms.common.api.ResultCallback
+
+
 
 
 class MainActivity : AppCompatActivity(), MainContract.View, GoogleApiClient.ConnectionCallbacks,
@@ -47,11 +51,22 @@ class MainActivity : AppCompatActivity(), MainContract.View, GoogleApiClient.Con
                 ViewUtils.displayFragmentWithoutArgs(this, HomeFragment(), false)
                 return@OnNavigationItemSelectedListener true
             }
+            R.id.navigation_map -> {
+                val myId = ChatMobileManagers.profileManager.myId
+                val bundle = Bundle()
+                bundle.putString(ProfileFragment.ID_ARG, myId)
+                ViewUtils.displayFragmentWithArgs(this, MapFragment(), false, bundle)
+                return@OnNavigationItemSelectedListener true
+            }
             R.id.navigation_profile -> {
                 val myId = ChatMobileManagers.profileManager.myId
                 val bundle = Bundle()
                 bundle.putString(ProfileFragment.ID_ARG, myId)
                 ViewUtils.displayFragmentWithArgs(this, ProfileFragment(), false, bundle)
+                return@OnNavigationItemSelectedListener true
+            }
+            R.id.navigation_stats -> {
+                ViewUtils.displayFragmentWithoutArgs(this, StatsFragment(), false)
                 return@OnNavigationItemSelectedListener true
             }
         }

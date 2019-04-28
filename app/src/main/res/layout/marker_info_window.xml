@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                             xmlns:app="http://schemas.android.com/apk/res-auto"
+                                             xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+                                             android:layout_height="match_parent">
+
+    <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:background="@color/cardview_light_background">
+        <TextView
+                android:id="@+id/marker_title"
+                android:text="Title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:textColor="#000"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:maxLines="1"/>
+        <ImageView
+                android:id="@+id/marker_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:maxHeight="400dp"
+                android:maxWidth="200dp"
+                android:scaleType="fitCenter"
+                android:layout_gravity="center"/>
+        <TextView
+                android:id="@+id/marker_address"
+                android:text="Address"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:textColor="#000"
+                android:textSize="12sp"
+                android:padding="5dp"
+                android:maxEms="15"
+                android:singleLine="false"/>
+    </LinearLayout>
+</android.support.constraint.ConstraintLayout>

@@ -48,7 +48,6 @@ class ChatPresenter(
                     GlobalScope.launch {
                         val mapper = ObjectMapper()
                         val chatMessage = mapper.treeToValue(message.data, ChatMessage::class.java)
-                        firebaseManager.saveMessage(roomId,chatMessage)
                         withContext(Dispatchers.Main) {
                             myView.onNewMessage(chatMessage)
                         }
@@ -77,7 +76,10 @@ class ChatPresenter(
     }
 
     override fun sendMessage(message: String) {
+        GlobalScope.launch {
             drone.publish(roomId, ChatMessage(profileManager.myId, message))
+            firebaseManager.saveMessage(roomId, ChatMessage(profileManager.myId, message))
+        }
     }
 
     override fun sendMessageWithImage(
@@ -96,16 +98,22 @@ class ChatPresenter(
                     Log.i("upload", "image upload failed")
                 }
                 .addOnSuccessListener {
-                    Log.i("upload", "image upload done")
-                    val picture = ChatPicture(imageName, currentAddress)
-                    // Send message
-                    drone.publish(roomId, ChatMessage(profileManager.myId, message, picture))
-
-                    // Add new marker to sender
-                    val marker = MapMarker(senderName = profileManager.myName, pictureId = imageName, latitude = location.latitude, longitude = location.longitude, address = currentAddress)
-                    GlobalScope.async {
+                    GlobalScope.launch {
+                        Log.i("upload", "image upload done")
+                        val picture = ChatPicture(imageName, currentAddress)
+                        drone.publish(roomId, ChatMessage(profileManager.myId, message, picture))
+                        firebaseManager.saveMessage(roomId, ChatMessage(profileManager.myId, message, picture))
+                        // Add new marker to sender
+                        val marker = MapMarker(
+                            senderName = profileManager.myName,
+                            pictureId = imageName,
+                            latitude = location.latitude,
+                            longitude = location.longitude,
+                            address = currentAddress
+                        )
                         firebaseManager.addMapMarkerToUser(profileManager.myId, marker)
                         firebaseManager.addMapMarkerToUser(friendId, marker)
+
                     }
                 }
         }

@@ -17,6 +17,10 @@ import java.io.*
 
 object ImageUtils {
 
+
+    const val ONE_MEGABYTE: Long = 1024 * 2014
+    const val FIVE_MEGABYTE: Long = ONE_MEGABYTE * 5
+
     var currentPhotoPath: String = ""
 
 

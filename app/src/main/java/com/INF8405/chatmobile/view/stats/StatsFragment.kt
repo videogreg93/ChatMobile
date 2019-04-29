@@ -12,20 +12,16 @@ import android.util.Log
 import kotlinx.android.synthetic.main.fragment_stats.*
 import android.content.IntentFilter
 import android.graphics.Color
+import android.widget.Toast
 import com.INF8405.chatmobile.models.Statistic
 import java.util.*
 import com.INF8405.chatmobile.services.StatsIntentService
-import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
-import com.github.mikephil.charting.formatter.IAxisValueFormatter
-import java.text.SimpleDateFormat
-import java.util.concurrent.TimeUnit
 
-
-class StatsFragment: Fragment(),  StatsContract.View {
+class StatsFragment : Fragment(), StatsContract.View {
     override lateinit var presenter: StatsContract.Presenter
     private var networkStatsUpdateServiceReceiver: NetworkStatsUpdateServiceReceiver? = null
 
@@ -55,25 +51,17 @@ class StatsFragment: Fragment(),  StatsContract.View {
         graph.xAxis.textColor = Color.BLACK
         //graph.xAxis.setValueFormatter(TimeValueFormatter())
         graph.xAxis.axisMinimum = 0f
-        graph.xAxis.axisMaximum = 10f
+        graph.xAxis.axisMaximum = StatsIntentService.sampleNumberMax.toFloat()
 
         // y axis
         graph.axisLeft.axisMinimum = 0f
         graph.axisRight.isEnabled = false
-        graph.axisLeft.axisMaximum = 5000f
+        graph.axisLeft.axisMaximum = 5000f // 5000 octets
 
-        // data
-        var datasetDownload = LineDataSet(mutableListOf<Entry>(), "Bandwidth download usage")
-        var datasetUpload = LineDataSet(mutableListOf<Entry>(), "Bandwidth upload usage")
-        datasetDownload.color = Color.BLUE
-        datasetUpload.color = Color.GREEN
-        val lineData = LineData()
-        lineData.addDataSet(datasetDownload)
-        lineData.addDataSet(datasetUpload)
-        graph.setTouchEnabled(false)
-        graph.setPinchZoom(false)
-        graph.data = lineData
-        graph.description.text = "Bandwidth usage"
+        // graph
+        graph.setTouchEnabled(true)
+        graph.setPinchZoom(true)
+        graph.description.text = "Bandwidth usage of the last 60 seconds"
         graph.invalidate()
     }
 
@@ -93,6 +81,10 @@ class StatsFragment: Fragment(),  StatsContract.View {
         context?.registerReceiver(networkStatsUpdateServiceReceiver, intentFilter)
     }
 
+    override fun onError() {
+        Toast.makeText(context, "Stats are not available for your device", Toast.LENGTH_SHORT).show()
+    }
+
     private inner class NetworkStatsUpdateServiceReceiver : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             if (intent.action == StatsIntentService.ACTION_BANDWIDTH) {
@@ -107,14 +99,16 @@ class StatsFragment: Fragment(),  StatsContract.View {
                 }
                 Log.d("broadcastReceiver", "receiving")
 
-                bandwidth_download?.text = bandwidthUsage.last().bandwidth_download.toString()
-                bandwidth_upload?.text = bandwidthUsage.last().bandwidth_upload.toString()
-                val first = bandwidthUsage.first.time
+                // update textviews
+                bandwidth_download?.text = bandwidthUsage.first().bandwidth_download.toString()
+                bandwidth_upload?.text = bandwidthUsage.first().bandwidth_upload.toString()
+
+                // update the graph
                 val listBandwidthDownload = bandwidthUsage.map {
-                    Entry(it.time.toFloat() - first.toFloat(), it.bandwidth_download.toFloat())
+                    Entry(it.time.toFloat(), it.bandwidth_download.toFloat())
                 }
                 val listBandWidthUpload = bandwidthUsage.map {
-                    Entry(it.time.toFloat() - first.toFloat(), it.bandwidth_upload.toFloat())
+                    Entry(it.time.toFloat(), it.bandwidth_upload.toFloat())
                 }
                 val dataset_download = LineDataSet(listBandwidthDownload, "Bandwidth download")
                 val dataset_upload = LineDataSet(listBandWidthUpload, "Bandwidth upload")
@@ -122,32 +116,20 @@ class StatsFragment: Fragment(),  StatsContract.View {
                 dataset_download.setDrawFilled(true)
                 dataset_upload.color = Color.GREEN
                 dataset_upload.setDrawFilled(true)
+
                 if (graph != null) {
-                    graph.data.removeDataSet(0)
-                    graph.data.removeDataSet(1)
-                    graph.data.addDataSet(dataset_download)
-                    graph.data.addDataSet(dataset_upload)
+                    if (graph.data != null) {
+                        graph.data = null
+                    }
+                    val lineData = LineData()
+                    lineData.addDataSet(dataset_download)
+                    lineData.addDataSet(dataset_upload)
+                    graph.data = lineData
                     graph.data.notifyDataChanged()
                     graph.notifyDataSetChanged()
-                    graph.moveViewToX(bandwidthUsage.last.time.toFloat())
                     graph.invalidate()
                 }
-
             }
-        }
-    }
-
-    private class TimeValueFormatter : IAxisValueFormatter{
-
-        private val mFormat: SimpleDateFormat
-
-        init {
-            mFormat = SimpleDateFormat("ss", Locale.CANADA_FRENCH) // use one decimal
-        }
-
-        override fun getFormattedValue(value: Float, axis: AxisBase?): String {
-            val millis = TimeUnit.SECONDS.toMillis(value.toLong())
-            return mFormat.format(Date(millis))
         }
     }
 }

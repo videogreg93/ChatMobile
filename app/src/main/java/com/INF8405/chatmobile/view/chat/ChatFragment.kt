@@ -44,8 +44,8 @@ class ChatFragment : Fragment(), ChatContract.View {
     override lateinit var presenter: ChatContract.Presenter
     lateinit var friend: Profile
     lateinit var adapter: ChatAdapter
-    private lateinit var fusedLocationClient: FusedLocationProviderClient
-    private var lastLocation: Location? = null
+    private var fusedLocationClient: FusedLocationProviderClient? = null
+    private var lastLocation: Location = Location("")
     private lateinit var resultReceiver: AddressResultReceiver
     private var currentAddress: String? = null
     private var imageDataToSend: ByteArray? = null
@@ -86,7 +86,7 @@ class ChatFragment : Fragment(), ChatContract.View {
             chat_title.setOnClickListener {
                 val bundle = Bundle()
                 bundle.putString(ProfileFragment.ID_ARG, friend.uid)
-                ViewUtils.displayFragmentWithArgs(activity!!,ProfileFragment(), true, bundle)
+                ViewUtils.displayFragmentWithArgs(activity!!, ProfileFragment(), true, bundle)
             }
             presenter.connectToRoom(friend)
         }
@@ -109,21 +109,18 @@ class ChatFragment : Fragment(), ChatContract.View {
         autoScrollToEnd()
     }
 
-    override fun onNewMessage(message: ChatMessage, isHistoric: Boolean) {
-        if (isHistoric) {
-            val items = adapter.items
-            items.add(0, message)
-            adapter.submitList(items)
-        } else {
-            adapter.addItem(message)
-        }
+    override fun onNewMessage(message: ChatMessage) {
+        println("New Message")
+        adapter.addItem(message)
         autoScrollToEnd()
     }
 
     private fun autoScrollToEnd() {
-        val rv: RecyclerView = requireActivity().findViewById(R.id.messages) as RecyclerView
-        if(adapter.itemCount > 0)
-            rv.smoothScrollToPosition(adapter.itemCount - 1)
+        activity?.let { activity ->
+            val rv: RecyclerView = activity.findViewById(R.id.messages) as RecyclerView
+            if (adapter.itemCount > 0)
+                rv.smoothScrollToPosition(adapter.itemCount - 1)
+        }
     }
 
     private fun handleSendButton(view: View, keyCode: Int, event: KeyEvent): Boolean {
@@ -131,13 +128,12 @@ class ChatFragment : Fragment(), ChatContract.View {
             keyCode == KeyEvent.KEYCODE_ENTER
         ) {
             val message = chat_input.text?.toString().orEmpty()
-            if(sendingImage) {
+            if (sendingImage) {
                 val imageName = "${requireActivity().getNewImageFileName()}_compressed"
-                presenter.sendMessageWithImage(message, imageDataToSend!!, currentAddress, imageName)
+                presenter.sendMessageWithImage(message, imageDataToSend!!, currentAddress, imageName, lastLocation, friend.uid)
                 picturesMap.put(imageName, (preview_photo.drawable as BitmapDrawable).bitmap)
                 clearPreviewImage()
-            }
-            else {
+            } else {
                 presenter.sendMessage(message)
             }
             hideKeyboardFrom(view)
@@ -156,12 +152,12 @@ class ChatFragment : Fragment(), ChatContract.View {
             try {
                 pictureFile = activity?.createImageFile()
             } catch (ex: IOException) {
-                Toast.makeText(activity,"Photo file can't be created, please try again", Toast.LENGTH_SHORT).show()
+                Toast.makeText(activity, "Photo file can't be created, please try again", Toast.LENGTH_SHORT).show()
                 return
             }
 
             if (pictureFile != null) {
-                photoURI = FileProvider.getUriForFile(requireContext(),"com.INF8405.chatmobile", pictureFile)
+                photoURI = FileProvider.getUriForFile(requireContext(), "com.INF8405.chatmobile", pictureFile)
                 cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
                 startActivityForResult(cameraIntent, REQUEST_IMAGE_CAPTURE)
             }
@@ -206,7 +202,6 @@ class ChatFragment : Fragment(), ChatContract.View {
     }
 
     private fun startIntentService() {
-
         val intent = Intent(activity, FetchAddressIntentService::class.java).apply {
             putExtra(FetchAddressIntentService.Constants.RECEIVER, resultReceiver)
             putExtra(FetchAddressIntentService.Constants.LOCATION_DATA_EXTRA, lastLocation)
@@ -215,15 +210,21 @@ class ChatFragment : Fragment(), ChatContract.View {
     }
 
     private fun fetchCurrentAddress() {
-        if (ContextCompat.checkSelfPermission( requireContext(), android.Manifest.permission.ACCESS_FINE_LOCATION ) != PackageManager.PERMISSION_GRANTED &&
-            ContextCompat.checkSelfPermission( requireContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
-        {
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                android.Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED &&
+            ContextCompat.checkSelfPermission(
+                requireContext(),
+                android.Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
             Log.e("fetchCurrentAddress", "location permissions not set")
             Toast.makeText(context, "Could not access to user location", Toast.LENGTH_LONG).show()
             return
         }
 
-        fusedLocationClient?.lastLocation?.addOnSuccessListener { location: Location? ->
+        fusedLocationClient?.lastLocation?.addOnSuccessListener { location: Location ->
             lastLocation = location
 
             if (lastLocation == null) return@addOnSuccessListener
@@ -260,11 +261,10 @@ class ChatFragment : Fragment(), ChatContract.View {
 
     override fun onDestroy() {
         super.onDestroy()
-        fusedLocationClient.flushLocations()
+        fusedLocationClient?.flushLocations()
         picturesMap.clear()
         imageDataToSend = null
     }
-
 
 
     companion object {

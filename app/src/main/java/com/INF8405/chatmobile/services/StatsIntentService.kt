@@ -3,21 +3,20 @@ package com.INF8405.chatmobile.services
 import android.app.IntentService
 import android.content.Intent
 import android.net.TrafficStats
-import android.util.Log
 import java.util.*
 import com.INF8405.chatmobile.models.Statistic
 
 /*
 * Service used to monitor some stats about the app and device, such as:
 *   - App network's consumption
-*   - App battery's consumption
+*   (- App battery's consumption)
 * */
 class StatsIntentService : IntentService(".system.services.stats.StatsIntentService") {
     private var uid = 0
 
     companion object {
-        const val sampleNumberMax = 10 // 1000ms * 300 samples = 300 seconds sample
-        const val sampleFrequency : Long = 1000 // sample each 500 ms
+        const val sampleNumberMax = 60 // 1000ms * 60 samples = 60 seconds sample
+        const val sampleFrequency : Long = 1000 // sample each 1000 ms
         val ACTION_BANDWIDTH = "send_bandwidth_usage"
         val PARAM_RESULT_BANDWIDTH_USAGE = "bandwidth_usage"
     }
@@ -30,14 +29,14 @@ class StatsIntentService : IntentService(".system.services.stats.StatsIntentServ
 
         while (true) {
             val currentTotal = Pair(TrafficStats.getUidRxBytes(uid), TrafficStats.getUidTxBytes(uid))
-            val current = Statistic(0,
+            val current = Statistic(-1,
                 currentTotal.first - lastTotalBandwidth_record.first,
                 currentTotal.second - lastTotalBandwidth_record.second)
             lastTotalBandwidth_record = currentTotal
 
             if (bandwidth_usage.size >= sampleNumberMax)
-                bandwidth_usage.removeFirst()
-            bandwidth_usage.addLast(current)
+                bandwidth_usage.removeLast()
+            bandwidth_usage.addFirst(current)
             bandwidth_usage.map { statistic ->
                 statistic.time += 1
             }

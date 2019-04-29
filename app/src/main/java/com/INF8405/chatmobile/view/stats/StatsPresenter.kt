@@ -11,5 +11,4 @@ class StatsPresenter (
     init {
         myView.presenter = this
     }
-
 }

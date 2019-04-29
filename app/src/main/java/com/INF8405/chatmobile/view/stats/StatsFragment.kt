@@ -80,12 +80,7 @@ class StatsFragment : Fragment(), StatsContract.View {
         intentFilter.addAction(StatsIntentService.ACTION_BANDWIDTH)
         context?.registerReceiver(networkStatsUpdateServiceReceiver, intentFilter)
     }
-
-    override fun onDestroy() {
-        super.onDestroy()
-
-        context?.unregisterReceiver(networkStatsUpdateServiceReceiver)
-    }
+    
     override fun onError() {
         Toast.makeText(context, "Stats are not available for your device", Toast.LENGTH_SHORT).show()
     }

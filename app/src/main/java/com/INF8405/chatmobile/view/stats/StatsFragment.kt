@@ -137,7 +137,7 @@ class StatsFragment : Fragment(), StatsContract.View {
                     graph.notifyDataSetChanged()
                     val max = bandwidthUsage.max()?.getMaxBandwidthValue()?.toFloat()
                     if (max != null) {
-                        graph.axisLeft.mAxisMaximum = max!!
+                        graph.axisLeft.mAxisMaximum = max
                     }
                     graph.invalidate()
                 }

@@ -37,6 +37,8 @@ class ProfileFragment : Fragment(), ProfileContract.View {
             setupEditButton(profileId)
             presenter.getProfile(profileId)
         }
+
+
     }
 
     private fun setupEditButton(profileId: String) {

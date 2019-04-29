@@ -1,22 +1,24 @@
 package com.INF8405.chatmobile.view.utils
 
 import android.graphics.Bitmap
-import android.graphics.Bitmap.CompressFormat
 import android.graphics.Matrix
 import android.support.media.ExifInterface
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
-import android.R.array
 import android.app.Activity
 import android.os.Environment
-import java.io.File
-import java.io.IOException
+import android.provider.Settings
+import android.util.Log
+import java.lang.Exception
 import java.nio.ByteBuffer
 import java.text.SimpleDateFormat
 import java.util.*
+import android.graphics.BitmapFactory
+import java.io.*
 
 
 object ImageUtils {
+
+    var currentPhotoPath: String = ""
+
 
     fun getPortraitBitmap(bitmap: Bitmap): Bitmap {
 
@@ -51,6 +53,13 @@ object ImageUtils {
         }
     }
 
+    fun compressImageToBitArray(bitmap: Bitmap, quality: Int): ByteArray? {
+        val baos = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, quality, baos)
+
+        return baos.toByteArray()
+    }
+
     private fun rotateImage(source: Bitmap, angle: Float): Bitmap {
         val matrix = Matrix()
         matrix.postRotate(angle)
@@ -59,22 +68,50 @@ object ImageUtils {
             matrix, true
         )
     }
-
-
-
 }
 
 @Throws(IOException::class)
 fun Activity.createImageFile(): File {
-    // Create an image file name
+    val pictureFile = getNewImageFileName()
+    val storageDir: File = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+    return File.createTempFile(pictureFile, ".jpg", storageDir)
+}
+
+fun Activity.getNewImageFileName(): String {
     val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
-    val storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-    return File.createTempFile(
-        "JPEG_${timeStamp}_", /* prefix */
-        ".jpg", /* suffix */
-        storageDir /* directory */
-    ).apply {
-        // Save a file: path for use with ACTION_VIEW intents
-        //currentPhotoPath = absolutePath
+    val androidId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID)
+    return "CHATMOBILE$androidId$timeStamp"
+}
+
+fun Activity.saveImageFile(imageName: String, data: Bitmap) {
+    // Create an image file name
+    val storageDir: File = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+    val imageFile = File(storageDir.path, "$imageName.jpg")
+    val fos = FileOutputStream(imageFile)
+
+    try {
+        data.compress(Bitmap.CompressFormat.JPEG, 100, fos)
+    } catch(e: Exception) {
+        Log.e("ImageUtils", "Could not save image.")
+    } finally {
+        try {
+            fos.close()
+            Log.i("ImageUtils", "Image was saved successfully")
+
+        } catch (e: IOException) {
+            Log.e("ImageUtils", "Could not close file output stream.")
+        }
+    }
+}
+
+fun Activity.loadImageFile(imageName: String): Bitmap? {
+    // Create an image file name
+    val storageDir: File = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+    val imageFile = File(storageDir.path, "$imageName.jpg")
+
+    return try {
+        BitmapFactory.decodeStream(FileInputStream(imageFile))
+    } catch (e: FileNotFoundException) {
+        null
     }
 }

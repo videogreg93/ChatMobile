@@ -14,5 +14,6 @@ interface ChatContract {
     interface Presenter : BasePresenter<View> {
         fun connectToRoom(friend: Profile)
         fun sendMessage(message: String)
+        fun sendMessageWithImage(message: String, imageData: ByteArray, currentAddress: String?, imageName: String)
     }
 }

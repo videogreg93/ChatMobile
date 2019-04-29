@@ -1,24 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                                             xmlns:tools="http://schemas.android.com/tools"
                                              xmlns:app="http://schemas.android.com/apk/res-auto"
                                              android:orientation="horizontal"
                                              android:layout_width="match_parent"
                                              android:layout_height="wrap_content">
-    <TextView
-            android:id="@+id/chat_text_left"
-            android:layout_width="0dp"
+
+    <LinearLayout
+            android:id="@+id/chat_bubble_left"
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:text="This is a message"
-            android:textAppearance="@style/Text.Message"
-            android:padding="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginStart="8dp"
-            android:textColor="#FFFFFF"
             android:background="@drawable/round_textbubble_left"
-    />
+            android:layout_marginTop="2dp"
+            android:layout_marginBottom="2dp">
+        <TextView
+                android:id="@+id/chat_text_left"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="This is a message"
+                android:padding="8dp"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp"
+                android:maxEms="15"
+                android:singleLine="false"
+                android:background="@drawable/round_textbubble_left"
+        />
+        <LinearLayout
+                android:id="@+id/image_container_left"
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_gravity="center_vertical">
+            <ImageView
+                    android:id="@+id/imageView_left"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:adjustViewBounds="true"
+                    android:maxHeight="400dp"
+                    android:maxWidth="200dp"
+                    android:scaleType="fitCenter"
+                    android:layout_gravity="center"/>
+            <TextView
+                    android:text="address"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:id="@+id/picture_address_left"
+                    android:padding="5dp"
+                    android:textSize="10sp"
+                    android:maxEms="15"
+                    android:singleLine="false"
+                    android:textColor="#FFFFFF"
+                    android:background="@drawable/round_textbubble_left"/>
+        </LinearLayout>
+    </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

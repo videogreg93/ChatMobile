@@ -60,4 +60,11 @@ dependencies {
 
     implementation 'com.android.support:multidex:1.0.0'
 
+    // Stats graph
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0-alpha'
+
+}
+
+repositories {
+    maven { url 'https://jitpack.io' }
 }

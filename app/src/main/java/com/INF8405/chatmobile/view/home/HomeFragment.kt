@@ -1,7 +1,10 @@
 package com.INF8405.chatmobile.view.home
 
 
+import android.Manifest
+import android.app.AlertDialog
 import android.os.Bundle
+import android.support.v4.app.ActivityCompat
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -32,6 +35,15 @@ class HomeFragment : Fragment(), HomeContract.View {
         super.onViewCreated(view, savedInstanceState)
         presenter.getMyUser()
         presenter.getMyFriends()
+
+        requestPermissions(arrayOf(Manifest.permission.READ_PHONE_STATE), 100)
+//        AlertDialog.Builder(context)
+//                .setTitle("Permissions Required")
+//                .setMessage("We need your permission to accedd the internet connection type")
+//                .setCancelable(false)
+//                .setPositiveButton("OK", { dialog, which ->
+//                        ActivityCompat.requestPermissions(activity!!.parent, arrayOf(Manifest.permission.READ_PHONE_STATE), 100)
+//                    }).create().show()
     }
 
     override fun onGetMyUser(user: Profile) {

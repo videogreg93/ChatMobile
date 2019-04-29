@@ -12,26 +12,4 @@ class StatsPresenter (
         myView.presenter = this
     }
 
-    override fun getStats() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun saveStats() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun checkPermission(context: Context): Boolean {
-        // check usage access settings
-        val appOps = context.getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
-        val mode = appOps.checkOpNoThrow(
-            AppOpsManager.OPSTR_GET_USAGE_STATS,
-            android.os.Process.myPid(),
-            ClassUtil.getPackageName(this.javaClass))
-
-        if (mode == AppOpsManager.MODE_ALLOWED) {
-            return true
-        }
-
-        return false
-    }
 }

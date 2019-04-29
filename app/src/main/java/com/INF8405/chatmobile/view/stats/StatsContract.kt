@@ -10,8 +10,5 @@ interface StatsContract {
     }
 
     interface Presenter : BasePresenter<View> {
-        fun getStats()
-        fun saveStats()
-        fun checkPermission(context: Context): Boolean
     }
 }

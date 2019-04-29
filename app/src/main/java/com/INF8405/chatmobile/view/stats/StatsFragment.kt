@@ -56,7 +56,7 @@ class StatsFragment : Fragment(), StatsContract.View {
         // y axis
         graph.axisLeft.axisMinimum = 0f
         graph.axisRight.isEnabled = false
-        graph.axisLeft.axisMaximum = 5000f // 5000 octets
+        graph.axisLeft.axisMaximum = 10000f // 5000 octets
 
         // graph
         graph.setTouchEnabled(true)
@@ -80,9 +80,17 @@ class StatsFragment : Fragment(), StatsContract.View {
         intentFilter.addAction(StatsIntentService.ACTION_BANDWIDTH)
         context?.registerReceiver(networkStatsUpdateServiceReceiver, intentFilter)
     }
-    
+
     override fun onError() {
         Toast.makeText(context, "Stats are not available for your device", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun statsMax(stats: Statistic) : Float {
+        if (stats.bandwidth_download > stats.bandwidth_upload) {
+            return stats.bandwidth_upload.toFloat()
+        } else {
+            return stats.bandwidth_upload.toFloat()
+        }
     }
 
     private inner class NetworkStatsUpdateServiceReceiver : BroadcastReceiver() {
@@ -127,6 +135,10 @@ class StatsFragment : Fragment(), StatsContract.View {
                     graph.data = lineData
                     graph.data.notifyDataChanged()
                     graph.notifyDataSetChanged()
+                    val max = bandwidthUsage.max()?.getMaxBandwidthValue()?.toFloat()
+                    if (max != null) {
+                        graph.axisLeft.mAxisMaximum = max!!
+                    }
                     graph.invalidate()
                 }
             }

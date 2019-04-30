@@ -18,6 +18,7 @@ import kotlinx.android.synthetic.main.fragment_profile.*
 import android.nfc.NdefRecord
 import android.nfc.NdefMessage
 import android.nfc.NfcEvent
+import android.widget.Toast
 import com.INF8405.chatmobile.R
 
 
@@ -57,7 +58,13 @@ class ProfileFragment : Fragment(), ProfileContract.View, NfcAdapter.CreateNdefM
             id = profileId
             setupEditButton(profileId)
             presenter.getProfile(profileId)
-            share_profile_button.setOnClickListener { nfcAdapter.invokeBeam(activity) }
+            share_profile_button.setOnClickListener {
+                if(androidBeamAvailable) {
+                    nfcAdapter.invokeBeam(activity)
+                } else {
+                    Toast.makeText(activity, "Android Beam is not available on this device.", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
 
 
